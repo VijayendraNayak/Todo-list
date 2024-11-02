@@ -53,23 +53,6 @@ export default function Home() {
       setTodoItems(existingItems);
     }
   }, []);
-
-  // const onClearClick = () => {
-  //   setTodoItems([]);
-  //   localStorage.removeItem("todoItems");
-  
-  //   toast.success("List cleared successfully!", {
-  //     position: "top-right", // Position at the top right
-  //     style: {
-  //       backgroundColor: "#d4edda", // Light green background
-  //       color: "#155724", // Dark green text
-  //       borderLeft: "4px solid #85c79d", // Light green border on the left only
-  //       borderRadius: "0.5rem", // Rounded corners
-  //       padding: "1.5rem", // Padding for a cleaner look
-  //     },
-  //   });
-  // };
-
   const onClearClick = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -83,7 +66,7 @@ export default function Home() {
       if (result.isConfirmed) {
         setTodoItems([]);
         localStorage.removeItem("todoItems");
-        
+
         toast.success("List cleared successfully!", {
           position: "top-right",
           style: {
@@ -92,13 +75,14 @@ export default function Home() {
             borderLeft: "4px solid #85c79d",
             borderRadius: "0.5rem",
             padding: "1.5rem",
+            marginTop:"3rem"
           },
         });
       }
     });
   };
-  
-  
+
+
   const OpenPopup = () => {
     router.push("?showPopup=true");
   };
@@ -123,6 +107,24 @@ export default function Home() {
     }
   };
 
+  const handleOnDelete = (title: string) => {
+    const updatedTasks = todoItems.filter((task) => task.title !== title);
+    setTodoItems(updatedTasks); // Update todoItems with the filtered list
+    localStorage.setItem("todoItems", JSON.stringify(updatedTasks)); // Persist the updated list in localStorage
+    toast.success("Task deleted successfully!", {
+      position: "top-right",
+      style: {
+        backgroundColor: "#d4edda",
+        color: "#155724",
+        borderLeft: "4px solid #85c79d",
+        borderRadius: "0.5rem",
+        padding: "1.5rem",
+        marginTop:"3rem"
+      },
+    });
+  };
+  
+
   return (
     <main className="h-screen pt-16">
       <div className="h-full flex flex-col max-w-2xl mx-auto p-8 gap-4">
@@ -132,20 +134,22 @@ export default function Home() {
             type="text"
             value={data?.title || ""}
             placeholder="Add new list item"
-            className="w-full px-4 py-4 rounded-md border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-400 text-green-600 text-xl font-bold pr-24"
+            className="w-full px-4 py-4 rounded-md border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-400 placeholder:font-thin text-black text-xl font-bold pr-24"
             readOnly
             onClick={OpenPopup}
           />
           <button
-            className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-blue-500 text-white font-medium text-xl rounded-md hover:bg-blue-600 transition-colors duration-200"
+            className={`absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-blue-500 text-white font-medium text-xl rounded-md hover:bg-blue-600 transition-colors duration-200 ${(data?.title?.trim() || "") === "" ? "bg-gray-300 cursor-not-allowed hover:bg-gray-300" : "hover:bg-blue-600"
+              }`}
             onClick={handleOnStorage}
+            disabled={(data?.title?.trim() || "") === ""}
           >
             Add
           </button>
         </div>
         <div className={`h-80 ${todoItems.length > 5 ? "overflow-y-scroll" : "overflow-y-auto"} max-w-2xl`}>
           {todoItems.map((item) => (
-            <Checkbox key={item.title} text={item.title} />
+            <Checkbox key={item.title} text={item.title} onDelete={handleOnDelete} />
           ))}
         </div>
         <div className="flex justify-between items-center pt-4 border-t max-w-2xl border-gray-200 text-gray-400 text-lg">
