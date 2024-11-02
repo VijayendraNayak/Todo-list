@@ -13,46 +13,51 @@ interface PopformProps {
     onClose: () => void;
     startDate: Date | null;
     onDatechange: (date: Date) => void;
-    onData: (data: TaskData) => void
-}
-interface TaskData {
-    title: string
-    description: string
-    date: Date | null
-    category: string
-    priority: string
+    onData: (data: TaskData) => void;
 }
 
-const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange,onData }) => {
+interface TaskData {
+    title: string;
+    description: string;
+    date: Date | null;
+    category: string;
+    priority: string;
+}
+
+const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange, onData }) => {
     if (!isVisible) return null;
+
     const categoryOptions = [
         { label: "Home", icon: FaHome, color: "text-red-500" },
         { label: "Work", icon: MdWork, color: "text-yellow-500" },
         { label: "Personal", icon: IoPersonSharp, color: "text-green-500" },
     ];
+
     const priorityOptions = [
         { label: "High", icon: FaExclamationTriangle, color: "text-red-500" },
         { label: "Medium", icon: FaExclamationCircle, color: "text-yellow-500" },
         { label: "Low", icon: FaCheckCircle, color: "text-green-500" },
     ];
-    const [title, SetTitle] = useState("")
-    const [description, SetDescription] = useState("")
-    const [category, SetCategory] = useState("")
-    const [priority, Setpriority] = useState("")
 
-    const handleOnDone=()=>{
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [category, setCategory] = useState("");
+    const [priority, setPriority] = useState("");
+
+    const handleOnDone = () => {
         onData({
             title,
             description,
-            date:startDate,
+            date: startDate,
             category,
             priority
-        })
-        onClose()
-    }
+        });
+        onClose();
+    };
+
     return (
         <div className="inset-0 fixed flex items-center justify-center bg-black bg-opacity-50 z-index-50">
-            <div className=" flex flex-col bg-white rounded-lg w-full max-w-xl p-6 shadow-lg gap-4">
+            <div className="flex flex-col bg-white rounded-lg w-full max-w-xl p-6 shadow-lg gap-4">
                 <h2 className="text-4xl font-sans font-semibold my-2 flex justify-center mb-5">
                     Add new Task
                 </h2>
@@ -60,52 +65,51 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                     <input
                         type="text"
                         value={title}
-                        onChange={(e) => SetTitle(e.target.value)}
+                        onChange={(e) => setTitle(e.target.value)}
                         placeholder="Task Name"
-                        className="border-2 w-full p-3 rounded-md focus:outline-none focus:border-3 focus:border-blue-400 "
+                        className="border-2 w-full p-3 rounded-md focus:outline-none focus:border-3 focus:border-blue-400"
                     />
                     <textarea
                         placeholder="Description"
                         className="border-2 focus:outline-none focus:border-3 w-full p-3 rounded-md focus:border-blue-400"
                         value={description}
-                        onChange={(e) => SetDescription(e.target.value)}
-                    >
-
-                    </textarea>
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
                 </div>
                 <div className="flex gap-4 items-center">
                     <div className="relative w-1/3">
                         <DatePicker
-                            selected={startDate}
-                            onChange={onDatechange}
+                            selected={startDate ?? new Date()}
+                            onChange={(date) => onDatechange(date as Date)}
                             placeholderText="Select a Date"
                             className="border-2 w-full p-3 rounded-md focus:outline-none focus:border-blue-400"
                         />
                         <LuCalendarCheck2 className="absolute right-2 top-3 text-gray-500 text-2xl" />
                     </div>
-                    <div className="w-1/3">
+                    <div className="w-1/3 text-black">
                         <ParentDropdown
                             label="category"
                             options={categoryOptions}
-                            onSelect={(value) => SetCategory(value)}
+                            onSelect={(value) => setCategory(value)}
                         />
                     </div>
-                    <div className="w-1/3">
+                    <div className="w-1/3 text-black">
                         <ParentDropdown
                             label="priority"
                             options={priorityOptions}
-                            onSelect={(value) => Setpriority(value)}
+                            onSelect={(value) => setPriority(value)}
                         />
                     </div>
-
                 </div>
                 <div className="flex gap-4 justify-center">
-                    <button className="p-2 px-5 bg-gray-400 rounded-md cursor-pointer flex items-center gap-2 text-white font-sans font-semibold hover:bg-gray-600 transition hover:scale-110 duration-300 "
+                    <button
+                        className="p-2 px-5 bg-gray-400 rounded-md cursor-pointer flex items-center gap-2 text-white font-sans font-semibold hover:bg-gray-600 transition hover:scale-110 duration-300"
                         onClick={onClose}
                     >
-                        Cancle
+                        Cancel
                     </button>
-                    <button className="p-2 px-5 bg-blue-400 rounded-md cursor-pointer text-white font-sans font-semibold hover:bg-blue-600 transition hover:scale-110 duration-300 "
+                    <button
+                        className="p-2 px-5 bg-blue-400 rounded-md cursor-pointer text-white font-sans font-semibold hover:bg-blue-600 transition hover:scale-110 duration-300"
                         onClick={handleOnDone}
                     >
                         Done
@@ -113,6 +117,7 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
+
 export default Popform;

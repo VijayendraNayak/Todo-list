@@ -12,7 +12,7 @@ interface DropdownProps {
 }
 
 const ParentDropdown: FC<DropdownProps> = ({ label, options }) => {
-    const [selectedOption, setSelectedOption] = useState(label);
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [isOpen, setIsOpen] = useState(false);
 
     const handleSelect = (option: DropdownOption) => {
@@ -26,7 +26,7 @@ const ParentDropdown: FC<DropdownProps> = ({ label, options }) => {
 
     return (
         <div
-            className={`relative w-full p-3 text-gray-400 rounded-md border-2 ${
+            className={`relative w-full p-3 rounded-md border-2 ${
                 isOpen ? "border-blue-400" : "border-gray-200"
             }`}
         >
@@ -34,7 +34,9 @@ const ParentDropdown: FC<DropdownProps> = ({ label, options }) => {
                 onClick={toggleDropdown}
                 className="cursor-pointer flex items-center justify-between"
             >
-                <span>{selectedOption}</span>
+                <span className={`${selectedOption ? "text-black" : "text-gray-400"}`}>
+                    {selectedOption || label}
+                </span>
                 <span className="text-gray-500">{isOpen ? "▲" : "▼"}</span>
             </div>
             {isOpen && (
@@ -43,9 +45,10 @@ const ParentDropdown: FC<DropdownProps> = ({ label, options }) => {
                         <div
                             key={option.label}
                             onClick={() => handleSelect(option)}
-                            className="flex items-center gap-2 p-3 hover:text-gray-700 cursor-pointer"
+                            className="flex items-center gap-2 p-3 hover:bg-gray-100 cursor-pointer"
                         >
-                            <option.icon className={option.color} /> {option.label}
+                            <option.icon className={`${option.color} text-lg`} />
+                            <span className="text-black">{option.label}</span>
                         </div>
                     ))}
                 </div>

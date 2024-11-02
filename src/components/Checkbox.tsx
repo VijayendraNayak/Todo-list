@@ -28,7 +28,7 @@ export default function Checkbox({ text }: CheckboxProps) {
             : 'text-gray-700 group-hover:text-blue-500'
           }`}
       >
-        {text="Sample text"}
+        {text}
       </span>
     </div>
   );
