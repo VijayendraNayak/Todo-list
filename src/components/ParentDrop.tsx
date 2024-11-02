@@ -1,4 +1,4 @@
-import { useState, FC } from "react";
+import { useState, FC, useEffect } from "react";
 
 interface DropdownOption {
     label: string;
@@ -9,14 +9,23 @@ interface DropdownOption {
 interface DropdownProps {
     label: string;
     options: DropdownOption[];
+    onSelect: (value: string) => void;
+    selected?: string; // Add selected prop
 }
 
-const ParentDropdown: FC<DropdownProps> = ({ label, options }) => {
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+const ParentDropdown: FC<DropdownProps> = ({ label, options, onSelect, selected }) => {
+    const [selectedOption, setSelectedOption] = useState<string | null>(selected || null);
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        if (selected) {
+            setSelectedOption(selected); // Set selected option when `selected` prop changes
+        }
+    }, [selected]);
 
     const handleSelect = (option: DropdownOption) => {
         setSelectedOption(option.label);
+        onSelect(option.label);
         setIsOpen(false); 
     };
 
