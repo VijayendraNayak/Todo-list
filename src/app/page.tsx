@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Checkbox from "@/components/Checkbox";
 import Popform from "@/components/Popform";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Toaster, toast } from 'sonner';
+import Swal from 'sweetalert2';
 
 interface TaskData {
   title: string;
@@ -51,9 +53,52 @@ export default function Home() {
       setTodoItems(existingItems);
     }
   }, []);
-  const onClearclick = () => {
-    setTodoItems([])
-  }
+
+  // const onClearClick = () => {
+  //   setTodoItems([]);
+  //   localStorage.removeItem("todoItems");
+  
+  //   toast.success("List cleared successfully!", {
+  //     position: "top-right", // Position at the top right
+  //     style: {
+  //       backgroundColor: "#d4edda", // Light green background
+  //       color: "#155724", // Dark green text
+  //       borderLeft: "4px solid #85c79d", // Light green border on the left only
+  //       borderRadius: "0.5rem", // Rounded corners
+  //       padding: "1.5rem", // Padding for a cleaner look
+  //     },
+  //   });
+  // };
+
+  const onClearClick = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, clear all!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setTodoItems([]);
+        localStorage.removeItem("todoItems");
+        
+        toast.success("List cleared successfully!", {
+          position: "top-right",
+          style: {
+            backgroundColor: "#d4edda",
+            color: "#155724",
+            borderLeft: "4px solid #85c79d",
+            borderRadius: "0.5rem",
+            padding: "1.5rem",
+          },
+        });
+      }
+    });
+  };
+  
+  
   const OpenPopup = () => {
     router.push("?showPopup=true");
   };
@@ -104,11 +149,14 @@ export default function Home() {
           ))}
         </div>
         <div className="flex justify-between items-center pt-4 border-t max-w-2xl border-gray-200 text-gray-400 text-lg">
-          <span>{todoItems.length} items</span>/
+          <span>{todoItems.length} items</span>
+          <Toaster />
           <button
             className="hover:text-gray-600 transition-colors duration-200"
-            onClick={onClearclick}
-          >Clear All</button>
+            onClick={onClearClick}
+          >
+            Clear All
+          </button>
         </div>
         <div className="transition duration-500">
           <Popform
