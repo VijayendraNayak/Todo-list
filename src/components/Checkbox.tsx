@@ -3,26 +3,27 @@ import { Check, X, Edit } from 'lucide-react';
 import { useState } from 'react';
 import UpdatePop from './UpdatePop';
 
-interface TaskData {
-  title: string;
-  description?: string;
-  date?: string | null;
-  category?: string;
-  priority?: string;
-}
-
 interface CheckboxProps {
-  text: string;  // Keep the original text prop for backward compatibility
-  data?: TaskData; // Optional task data for enhanced functionality
+  title: string;
+  description: string;
+  date: string | null;
+  category: string;
+  priority: "High" | "Medium" | "Low";
   onDelete: (title: string) => void;
 }
 
-export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
+export default function Checkbox({ 
+  title,
+  date,
+  category,
+  priority,
+  onDelete 
+}: CheckboxProps) {
   const [isChecked, setIsChecked] = useState(false);
   const [isPopVisible, setIsPopVisible] = useState(false);
 
   const handleDeleteClick = () => {
-    onDelete(text);
+    onDelete(title);
   };
 
   const handleEditClick = () => {
@@ -30,7 +31,7 @@ export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
   };
 
   // Format the date for display
-  const formatDate = (dateString: string | null | undefined) => {
+  const formatDate = (dateString: string | null) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -41,8 +42,7 @@ export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
   };
 
   // Get priority color
-  const getPriorityColor = (priority: string | undefined) => {
-    if (!priority) return 'text-gray-500';
+  const getPriorityColor = (priority: "High" | "Medium" | "Low") => {
     switch (priority.toLowerCase()) {
       case 'high':
         return 'text-red-500';
@@ -69,30 +69,28 @@ export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
         <div className="flex flex-col">
           <span
             className={`text-base ${
-              isChecked ? 'text-gray-500 line-through  group-hover:text-gray-400' : 'text-gray-700  group-hover:text-blue-400'
-            } `}
+              isChecked ? 'text-gray-500 line-through group-hover:text-gray-400' : 'text-gray-700 group-hover:text-blue-400'
+            }`}
           >
-            {text}
+            {title}
           </span>
-          {data && (
-            <div className="flex gap-2 text-xs text-gray-500">
-              {data.date && (
-                <span className="flex items-center gap-1">
-                  {formatDate(data.date)}
-                </span>
-              )}
-              {data.category && (
-                <span className="px-1.5 py-0.5 bg-gray-100 rounded-full">
-                  {data.category}
-                </span>
-              )}
-              {data.priority && (
-                <span className={`${getPriorityColor(data.priority)} font-medium`}>
-                  {data.priority}
-                </span>
-              )}
-            </div>
-          )}
+          <div className="flex gap-2 text-xs text-gray-500">
+            {date && (
+              <span className="flex items-center gap-1">
+                {formatDate(date)}
+              </span>
+            )}
+            {category && (
+              <span className="px-1.5 py-0.5 bg-gray-100 rounded-full">
+                {category}
+              </span>
+            )}
+            {priority && (
+              <span className={`${getPriorityColor(priority)} font-medium`}>
+                {priority}
+              </span>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -112,7 +110,7 @@ export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
       {isPopVisible && (
         <UpdatePop
           isVisible={isPopVisible}
-          title={text}
+          title={title}
           onClose={() => setIsPopVisible(false)}
         />
       )}

@@ -19,19 +19,17 @@ interface PopformProps {
 interface TaskData {
     title: string;
     description: string;
-    date: Date | null;
+    date: string | null;  // Changed from Date | null to string | null
     category: string;
-    priority: string;
+    priority: "High" | "Medium" | "Low";
 }
 
 const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange, onData }) => {
-    // Initialize hooks at the top of the component
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("Home"); // Default to first category option
-    const [priority, setPriority] = useState("High"); // Default to first priority option
+    const [category, setCategory] = useState("Home");
+    const [priority, setPriority] = useState<"High" | "Medium" | "Low">("High");
 
-    // Exit early if not visible
     if (!isVisible) return null;
 
     const categoryOptions = [
@@ -41,16 +39,16 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
     ];
 
     const priorityOptions = [
-        { label: "High", icon: FaExclamationTriangle, color: "text-red-500" },
-        { label: "Medium", icon: FaExclamationCircle, color: "text-yellow-500" },
-        { label: "Low", icon: FaCheckCircle, color: "text-green-500" },
+        { label: "High" as const, icon: FaExclamationTriangle, color: "text-red-500" },
+        { label: "Medium" as const, icon: FaExclamationCircle, color: "text-yellow-500" },
+        { label: "Low" as const, icon: FaCheckCircle, color: "text-green-500" },
     ];
 
     const handleOnDone = () => {
         onData({
             title,
             description,
-            date: startDate,
+            date: startDate ? startDate.toISOString() : null,  // Convert Date to ISO string
             category,
             priority
         });
@@ -88,7 +86,7 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                         />
                         <LuCalendarCheck2 className="hidden md:flex absolute right-2 top-3 md:top-4 text-gray-500 text-xl md:text-2xl" />
                     </div>
-                    <div className="w-1/3 text-black ">
+                    <div className="w-1/3 text-black">
                         <ParentDropdown
                             label="category"
                             options={categoryOptions}
@@ -99,7 +97,7 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                         <ParentDropdown
                             label="priority"
                             options={priorityOptions}
-                            onSelect={(value) => setPriority(value || priorityOptions[0]?.label || "")}
+                            onSelect={(value) => setPriority((value as "High" | "Medium" | "Low") || priorityOptions[0]?.label)}
                         />
                     </div>
                 </div>
