@@ -28,8 +28,8 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Link to the favicon in the public folder */}
-        <link rel="icon" href="/cropped_logo.png" type="image/webp" />
-      </head>
+        <link rel="icon" href="/cropped_logo.png" type="image/png" sizes="32x32" />
+        </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
