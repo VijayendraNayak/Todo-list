@@ -1,61 +1,52 @@
-📋 Todo List App
+# 📋 Todo List App
 A simple and efficient Todo List application built with Next.js.
 
-🚀 Getting Started
+# 🚀 Getting Started
 Follow these steps to get the development server running on your local machine.
 
-🛠 Installation
+#🛠 Installation
 First, install the dependencies:
 
-bash
-Copy code
-# Using npm
 npm install
 
-# Using yarn
 yarn install
 
-# Using pnpm
 pnpm install
 
-# Using bun
 bun install
-🎬 Running the Development Server
+
+# 🎬 Running the Development Server
 Start the development server:
 
-bash
-Copy code
-# Using npm
 npm run dev
 
-# Using yarn
 yarn dev
 
-# Using pnpm
 pnpm dev
 
-# Using bun
 bun dev
-Open http://localhost:3000 with your browser to see the application in action.
 
-✨ Features
+# Open http://localhost:3000 with your browser to see the application in action.
+
+# ✨ Features
 Add Tasks: Easily add new tasks with titles, descriptions, due dates, categories, and priority levels.
 Filter Tasks: Filter tasks by date, category (Home, Personal, Work), or view them sorted by priority.
 Manage Tasks: Mark tasks as completed, edit existing tasks, or delete them as needed.
 Persistent Storage: Tasks are saved in localStorage, ensuring your list remains intact even after refreshing the page.
 Responsive Design: Optimized for both desktop and mobile devices.
-🌐 Deployment
+
+# 🌐 Deployment
 The application is deployed on Vercel. You can access it live here:
 
-👉 vijayendra-todo-list.vercel.app
+# 👉 vijayendra-todo-list.vercel.app
 
-🛠️ Built With
+# 🛠️ Built With
 Next.js - The React Framework for Production
 Sonner - Notification library
 SweetAlert2 - Beautiful, responsive, customizable replacement for JavaScript's popup boxes
 Lucide React - Icon library
-🤝 Contributing
+# 🤝 Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
-📄 License
+# 📄 License
 This project is licensed under the MIT License.
