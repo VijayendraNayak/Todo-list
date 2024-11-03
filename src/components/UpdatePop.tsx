@@ -7,7 +7,7 @@ import { FaExclamationTriangle, FaExclamationCircle, FaCheckCircle } from "react
 import { FaHome } from "react-icons/fa";
 import { MdWork } from "react-icons/md";
 import { IoPersonSharp } from "react-icons/io5";
-import { toast } from 'sonner'; // Make sure to import the toast function
+import { toast } from 'sonner';
 
 interface PopformProps {
     isVisible: boolean;
@@ -29,6 +29,7 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
     const [date, setDate] = useState<Date | null>(null);
     const [category, setCategory] = useState("");
     const [priority, setPriority] = useState("");
+    const [isModified, setIsModified] = useState(false);
 
     useEffect(() => {
         if (title) {
@@ -44,8 +45,23 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
             }
         }
     }, [title]);
-    
+
     const handleSave = () => {
+        if (!isModified) {
+            toast.warning("No changes made to update!", {
+                position: "top-right",
+                style: {
+                    backgroundColor: "#f9e79f",
+                    color: "#856404",
+                    borderLeft: "5px solid #d4ac0d ",
+                    borderRadius: "0.5rem",
+                    padding: "1.5rem",
+                    marginTop: "3rem"
+                },
+            });
+            return;
+        }
+
         const updatedTask: TaskData = {
             title: formTitle,
             description,
@@ -61,7 +77,6 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
 
         localStorage.setItem("todoItems", JSON.stringify(updatedItems));
         
-        // Show success toast message
         toast.success("Task updated successfully!", {
             position: "top-right",
             style: {
@@ -77,6 +92,10 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
         onClose();
     };
 
+    const handleChange = () => {
+        setIsModified(true);
+    };
+
     if (!isVisible) return null;
 
     return (
@@ -87,12 +106,18 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
                     <input
                         type="text"
                         value={formTitle}
-                        onChange={(e) => setFormTitle(e.target.value)}
+                        onChange={(e) => {
+                            setFormTitle(e.target.value);
+                            handleChange();
+                        }}
                         className="border-2 w-full p-3 rounded-md"
                     />
                     <textarea
                         value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        onChange={(e) => {
+                            setDescription(e.target.value);
+                            handleChange();
+                        }}
                         className="border-2 w-full p-3 rounded-md"
                     />
                 </div>
@@ -100,7 +125,10 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
                     <div className="relative w-1/3">
                         <DatePicker
                             selected={date}
-                            onChange={(selectedDate) => setDate(selectedDate)}
+                            onChange={(selectedDate) => {
+                                setDate(selectedDate);
+                                handleChange();
+                            }}
                             className="border-2 w-full p-3 rounded-md"
                         />
                         <LuCalendarCheck2 className="absolute right-2 top-3 text-gray-500 text-2xl" />
@@ -113,7 +141,10 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
                                 { label: "Work", icon: MdWork, color: "text-yellow-500" },
                                 { label: "Personal", icon: IoPersonSharp, color: "text-green-500" },
                             ]}
-                            onSelect={(value) => setCategory(value)}
+                            onSelect={(value) => {
+                                setCategory(value);
+                                handleChange();
+                            }}
                             selected={category}
                         />
                     </div>
@@ -125,7 +156,10 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
                                 { label: "Medium", icon: FaExclamationCircle, color: "text-yellow-500" },
                                 { label: "Low", icon: FaCheckCircle, color: "text-green-500" },
                             ]}
-                            onSelect={(value) => setPriority(value)}
+                            onSelect={(value) => {
+                                setPriority(value);
+                                handleChange();
+                            }}
                             selected={priority}
                         />
                     </div>
