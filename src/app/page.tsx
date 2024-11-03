@@ -10,7 +10,7 @@ import { sortItemsByPriority, sortItemsByDate, getCurrentItems } from '@/utility
 interface TaskData {
   title: string;
   description: string;
-  date: string | null;
+  date: Date | string | null;
   category: string;
   priority: string;
 }
@@ -124,9 +124,9 @@ export default function Home() {
       return;
     }
 
-    const newTask = {
+    const newTask: TaskData = {
       ...data,
-      date: data.date ? new Date(data.date).toISOString() : null
+      date: data.date ? new Date(data.date).toISOString() : null,
     };
 
     const existingItems = JSON.parse(localStorage.getItem("todoItems") || "[]");
