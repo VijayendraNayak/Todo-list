@@ -1,10 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Todo List App
+A simple and efficient Todo List application built with Next.js.
 
-## Getting Started
+Getting Started
+Follow these steps to get the development server running on your local machine.
 
-First, run the development server:
+Installation
+First, install the dependencies:
 
-```bash
+bash
+Copy code
+npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
+Running the Development Server
+Start the development server:
+
+bash
+Copy code
 npm run dev
 # or
 yarn dev
@@ -12,25 +28,26 @@ yarn dev
 pnpm dev
 # or
 bun dev
-```
+Open http://localhost:3000 with your browser to see the application in action.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Features
+Add Tasks: Easily add new tasks with titles, descriptions, due dates, categories, and priority levels.
+Filter Tasks: Filter tasks by date, category (Home, Personal, Work), or view them sorted by priority.
+Manage Tasks: Mark tasks as completed, edit existing tasks, or delete them as needed.
+Persistent Storage: Tasks are saved in localStorage, ensuring your list remains intact even after refreshing the page.
+Responsive Design: Optimized for both desktop and mobile devices.
+Deployment
+The application is deployed on Vercel. You can access it live here:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+👉 vijayendra-todo-list.vercel.app
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Built With
+Next.js - The React Framework for Production
+Sonner - Notification library
+SweetAlert2 - Beautiful, responsive, customizable replacement for JavaScript's popup boxes
+Lucide React - Icon library
+Contributing
+Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+License
+This project is licensed under the MIT License.
