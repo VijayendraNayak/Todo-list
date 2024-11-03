@@ -26,7 +26,7 @@ pnpm dev
 
 bun dev
 
-# Open http://localhost:3000 with your browser to see the application in action.
+Open http://localhost:3000 with your browser to see the application in action.
 
 # ✨ Features
 Add Tasks: Easily add new tasks with titles, descriptions, due dates, categories, and priority levels.
@@ -38,7 +38,7 @@ Responsive Design: Optimized for both desktop and mobile devices.
 # 🌐 Deployment
 The application is deployed on Vercel. You can access it live here:
 
-# 👉 vijayendra-todo-list.vercel.app
+# 👉 http://vijayendra-todo-list.vercel.app
 
 # 🛠️ Built With
 Next.js - The React Framework for Production
