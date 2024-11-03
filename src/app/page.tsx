@@ -91,7 +91,7 @@ export default function Home() {
     category: "",
     priority: "Low"
   });
-
+  console.log(dateSortCount);
   useEffect(() => {
     const existingItems = JSON.parse(localStorage.getItem("todoItems") || "[]");
     if (existingItems.length === 0) {

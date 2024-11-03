@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const Page = () => {
   const [counter, setCounter] = useState(5); 
@@ -23,8 +24,7 @@ const Page = () => {
       <div className="bg-gradient-to-r from-green-400 to-white rounded-lg shadow-lg p-8 max-w-md text-center transform transition-all duration-500 hover:scale-105">
         <div className='flex justify-center'>
 
-      <img src="/cropped_logo.png" alt="Logo" className="h-20 w-20 flex justify-center" />
-        </div>
+        <Image src="/cropped_logo.png" alt="Logo" width={80} height={80} className="flex justify-center" />        </div>
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
           This is a dummy page <span role="img" aria-label="smile">😅</span>
         </h1>

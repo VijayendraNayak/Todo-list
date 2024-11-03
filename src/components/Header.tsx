@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 type Props = Record<string, never>;
 
 export default function Header({}: Props) {
@@ -8,8 +9,7 @@ export default function Header({}: Props) {
       <div className='flex justify-between items-center max-w-6xl mx-auto h-16 px-4'>
         <Link href="/">
         <div className='flex items-center space-x-2'>
-        <img src="/cropped_logo.png" alt="Logo" className="h-10 w-10" />         
-         <div className='flex items-center'>
+        <Image src="/cropped_logo.png" alt="Logo" width={40} height={40} className="flex justify-center" />         <div className='flex items-center'>
             <span className='text-gray-800 font-bold text-3xl'>Todo</span>
             <span className='text-blue-500 font-bold text-3xl'>.</span>
             <span className='text-gray-500 font-medium text-xl ml-1.5'>List</span>
