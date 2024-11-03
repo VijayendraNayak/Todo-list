@@ -247,7 +247,19 @@ export default function Home() {
       setCurrentView('default');
     }
 
-    
+    if ((dateSortCount + 1) % 2 === 1) {
+      toast.success("Sorted by date proximity!", {
+        position: "top-right",
+        style: {
+          backgroundColor: "#d4edda",
+          color: "#155724",
+          borderLeft: "4px solid #85c79d",
+          borderRadius: "0.5rem",
+          padding: "1.5rem",
+          marginTop: "3rem"
+        },
+      });
+    }
   };
 
   const sortByPriority = () => {
@@ -263,7 +275,19 @@ export default function Home() {
       setCurrentView('default');
     }
 
-    
+    if ((prioritySortCount + 1) % 2 === 1) {
+      toast.success("Sorted by priority!", {
+        position: "top-right",
+        style: {
+          backgroundColor: "#d4edda",
+          color: "#155724",
+          borderLeft: "4px solid #85c79d",
+          borderRadius: "0.5rem",
+          padding: "1.5rem",
+          marginTop: "3rem"
+        },
+      });
+    }
   };
 
   const currentItems = getCurrentItems(currentView, todoItems, prioritySortedItems, dateSortedItems);
