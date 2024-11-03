@@ -10,15 +10,20 @@ interface TaskData {
   description: string;
   date: string | null;
   category: string;
-  priority: "High" | "Medium" | "Low";
+  priority: "High" | "Medium" | "Low" | -1; 
 }
 
 const sortItemsByPriority = (items: TaskData[]): TaskData[] => {
-  const priorityOrder: { [key: string]: number } = { "High": 0, "Medium": 1, "Low": 2 };
+  const priorityOrder: { [key: string]: number } = { 
+    "High": 0, 
+    "Medium": 1, 
+    "Low": 2, 
+    "-1": 3  // Add handling for completed tasks
+  };
 
   return [...items].sort((a, b) => {
-    const priorityA = priorityOrder[a.priority] ?? 3;
-    const priorityB = priorityOrder[b.priority] ?? 3;
+    const priorityA = priorityOrder[a.priority.toString()] ?? 4;
+    const priorityB = priorityOrder[b.priority.toString()] ?? 4;
 
     if (priorityA === priorityB && a.date && b.date) {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -27,6 +32,7 @@ const sortItemsByPriority = (items: TaskData[]): TaskData[] => {
     return priorityA - priorityB;
   });
 };
+
 
 const sortItemsByDate = (items: TaskData[]): TaskData[] => {
   const currentDate = new Date().getTime();
@@ -45,33 +51,39 @@ const sortItemsByDate = (items: TaskData[]): TaskData[] => {
   });
 };
 
+const filterItemsByCategory = (items: TaskData[], category: string): TaskData[] => {
+  return items.filter(item => item.category.toLowerCase() === category.toLowerCase());
+};
+
 const getCurrentItems = (
-  currentView: 'default' | 'priority' | 'date',
+  currentView: string,
   todoItems: TaskData[],
-  prioritySortedItems: TaskData[],
   dateSortedItems: TaskData[]
 ): TaskData[] => {
+  // First sort by priority regardless of view
+  const prioritySortedItems = sortItemsByPriority(todoItems);
+  
   switch (currentView) {
-    case 'priority':
-      return prioritySortedItems;
     case 'date':
       return dateSortedItems;
+    case 'home':
+      return filterItemsByCategory(prioritySortedItems, 'home');
+    case 'personal':
+      return filterItemsByCategory(prioritySortedItems, 'personal');
+    case 'work':
+      return filterItemsByCategory(prioritySortedItems, 'work');
     default:
-      return todoItems;
+      return prioritySortedItems;
   }
 };
 
 export default function Home() {
   const [showPopup, setShowPopup] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
-  const [isDateSelected, setIsDateSelected] = useState(false);
-  const [isPrioritySelected, setIsPrioritySelected] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string>('default');
   const [dateSortCount, setDateSortCount] = useState(0);
-  const [prioritySortCount, setPrioritySortCount] = useState(0);
   const [todoItems, setTodoItems] = useState<TaskData[]>([]);
-  const [prioritySortedItems, setPrioritySortedItems] = useState<TaskData[]>([]);
   const [dateSortedItems, setDateSortedItems] = useState<TaskData[]>([]);
-  const [currentView, setCurrentView] = useState<'default' | 'priority' | 'date'>('default');
   const [formData, setFormData] = useState<TaskData>({
     title: "",
     description: "",
@@ -101,15 +113,20 @@ export default function Home() {
       ];
       localStorage.setItem("todoItems", JSON.stringify(defaultItems));
       setTodoItems(defaultItems);
-      setPrioritySortedItems(sortItemsByPriority(defaultItems));
       setDateSortedItems(sortItemsByDate(defaultItems));
     } else {
       setTodoItems(existingItems);
-      setPrioritySortedItems(sortItemsByPriority(existingItems));
       setDateSortedItems(sortItemsByDate(existingItems));
     }
   }, []);
-
+  const handlePriorityChange = (title: string, newPriority: "High" | "Medium" | "Low" | -1) => {
+    const updatedTasks = todoItems.map(task => 
+      task.title === title ? { ...task, priority: newPriority } : task
+    );
+    setTodoItems(updatedTasks);
+    setDateSortedItems(sortItemsByDate(updatedTasks));
+    localStorage.setItem("todoItems", JSON.stringify(updatedTasks));
+  };
   const onClearClick = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -122,12 +139,9 @@ export default function Home() {
     }).then((result) => {
       if (result.isConfirmed) {
         setTodoItems([]);
-        setPrioritySortedItems([]);
         setDateSortedItems([]);
         localStorage.removeItem("todoItems");
-        setCurrentView('default');
-        setIsDateSelected(false);
-        setIsPrioritySelected(false);
+        setActiveFilter('default');
 
         toast.success("List cleared successfully!", {
           position: "top-right",
@@ -166,7 +180,7 @@ export default function Home() {
 
   const handleOnStorage = (formData: TaskData) => {
     if (!formData.title.trim()) {
-      toast.error("Task title cannot be empty!", {
+      toast.error("Task Cannot be Empty!", {
         position: "top-right",
         style: {
           backgroundColor: "#f8d7da",
@@ -184,16 +198,9 @@ export default function Home() {
     localStorage.setItem("todoItems", JSON.stringify(updatedItems));
 
     setTodoItems(updatedItems);
-    setPrioritySortedItems(sortItemsByPriority(updatedItems));
     setDateSortedItems(sortItemsByDate(updatedItems));
 
     ClosePopup();
-
-    if (currentView === 'priority') {
-      setCurrentView('priority');
-    } else if (currentView === 'date') {
-      setCurrentView('date');
-    }
 
     toast.success("Task added successfully!", {
       position: "top-right",
@@ -211,15 +218,8 @@ export default function Home() {
   const handleOnDelete = (title: string) => {
     const updatedTasks = todoItems.filter((task) => task.title !== title);
     setTodoItems(updatedTasks);
-    setPrioritySortedItems(sortItemsByPriority(updatedTasks));
     setDateSortedItems(sortItemsByDate(updatedTasks));
     localStorage.setItem("todoItems", JSON.stringify(updatedTasks));
-
-    if (currentView === 'priority') {
-      setCurrentView('priority');
-    } else if (currentView === 'date') {
-      setCurrentView('date');
-    }
 
     toast.success("Task deleted successfully!", {
       position: "top-right",
@@ -234,63 +234,15 @@ export default function Home() {
     });
   };
 
-  const sortByDate = () => {
-    setIsDateSelected((prev) => !prev);
-    setDateSortCount((prev) => prev + 1);
-    setIsPrioritySelected(false);
-
-    if (!isDateSelected) {
-      const sorted = sortItemsByDate(todoItems);
-      setDateSortedItems(sorted);
-      setCurrentView('date');
-    } else {
-      setCurrentView('default');
-    }
-
-    if ((dateSortCount + 1) % 2 === 1) {
-      toast.success("Sorted by date proximity!", {
-        position: "top-right",
-        style: {
-          backgroundColor: "#d4edda",
-          color: "#155724",
-          borderLeft: "4px solid #85c79d",
-          borderRadius: "0.5rem",
-          padding: "1.5rem",
-          marginTop: "3rem"
-        },
-      });
+  const handleFilterChange = (filter: string) => {
+    // If clicking the same filter, reset to default view
+    setActiveFilter(prevFilter => prevFilter === filter ? 'default' : filter);
+    if (filter === 'date') {
+      setDateSortCount(prev => prev + 1);
     }
   };
 
-  const sortByPriority = () => {
-    setIsPrioritySelected((prev) => !prev);
-    setPrioritySortCount((prev) => prev + 1);
-    setIsDateSelected(false);
-
-    if (!isPrioritySelected) {
-      const sorted = sortItemsByPriority(todoItems);
-      setPrioritySortedItems(sorted);
-      setCurrentView('priority');
-    } else {
-      setCurrentView('default');
-    }
-
-    if ((prioritySortCount + 1) % 2 === 1) {
-      toast.success("Sorted by priority!", {
-        position: "top-right",
-        style: {
-          backgroundColor: "#d4edda",
-          color: "#155724",
-          borderLeft: "4px solid #85c79d",
-          borderRadius: "0.5rem",
-          padding: "1.5rem",
-          marginTop: "3rem"
-        },
-      });
-    }
-  };
-
-  const currentItems = getCurrentItems(currentView, todoItems, prioritySortedItems, dateSortedItems);
+  const currentItems = getCurrentItems(activeFilter, todoItems, dateSortedItems);
 
   return (
     <main className="h-screen pt-16">
@@ -313,38 +265,61 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="flex gap-4 mt-4">
+        <div className="flex gap-4 mt-4 flex-wrap">
           <button
-            className={`px-4 py-2 rounded-full ${isDateSelected
+            className={`px-4 py-2 rounded-full ${
+              activeFilter === 'date'
                 ? "bg-blue-100 text-blue-800 transform -translate-x-1"
                 : "bg-gray-200 text-gray-800"
-              } transition`}
-            onClick={sortByDate}
+            } transition`}
+            onClick={() => handleFilterChange('date')}
           >
-            {isDateSelected ? "✓ Sort by Date" : "Sort by Date"}
+            {activeFilter === 'date' ? "✓ By Date" : "By Date"}
           </button>
           <button
-            className={`px-4 py-2 rounded-full ${isPrioritySelected
+            className={`px-4 py-2 rounded-full ${
+              activeFilter === 'home'
                 ? "bg-blue-100 text-blue-800 transform -translate-x-1"
                 : "bg-gray-200 text-gray-800"
-              } transition`}
-            onClick={sortByPriority}
+            } transition`}
+            onClick={() => handleFilterChange('home')}
           >
-            {isPrioritySelected ? "✓ Sort by Priority" : "Sort by Priority"}
+            {activeFilter === 'home' ? "✓ Home" : "Home"}
+          </button>
+          <button
+            className={`px-4 py-2 rounded-full ${
+              activeFilter === 'personal'
+                ? "bg-blue-100 text-blue-800 transform -translate-x-1"
+                : "bg-gray-200 text-gray-800"
+            } transition`}
+            onClick={() => handleFilterChange('personal')}
+          >
+            {activeFilter === 'personal' ? "✓ Personal" : "Personal"}
+          </button>
+          <button
+            className={`px-4 py-2 rounded-full ${
+              activeFilter === 'work'
+                ? "bg-blue-100 text-blue-800 transform -translate-x-1"
+                : "bg-gray-200 text-gray-800"
+            } transition`}
+            onClick={() => handleFilterChange('work')}
+          >
+            {activeFilter === 'work' ? "✓ Work" : "Work"}
           </button>
         </div>
 
         <div className={`h-80 ${currentItems.length > 5 ? "overflow-y-scroll" : "overflow-y-auto"} max-w-2xl`}>
           {currentItems.map((item, index) => (
             <Checkbox
-              key={index}
-              title={item.title}
-              description={item.description}
-              date={item.date}
-              category={item.category}
-              priority={item.priority}
-              onDelete={() => handleOnDelete(item.title)}
-            />
+            key={index}
+            title={item.title}
+            description={item.description}
+            date={item.date}
+            category={item.category}
+            priority={item.priority}
+            onDelete={() => handleOnDelete(item.title)}
+            onPriorityChange={handlePriorityChange}  // Add this line
+          />
           ))}
         </div>
 

@@ -7,6 +7,7 @@ import { MdWork } from "react-icons/md";
 import { IoPersonSharp } from "react-icons/io5";
 import ParentDropdown from "./ParentDrop";
 import { FaExclamationTriangle, FaExclamationCircle, FaCheckCircle } from "react-icons/fa";
+import { Toaster, toast } from 'sonner';
 
 interface PopformProps {
     isVisible: boolean;
@@ -19,7 +20,7 @@ interface PopformProps {
 interface TaskData {
     title: string;
     description: string;
-    date: string | null; // Changed from Date | null to string | null
+    date: string | null;
     category: string;
     priority: "High" | "Medium" | "Low";
 }
@@ -45,11 +46,26 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
     ];
 
     const handleOnDone = () => {
-        const selectedDate = startDate || new Date(); // Use today's date if no date is selected
+        if (!title.trim() || !description.trim() || !category || !priority ) {
+            toast.error("Please fill in all fields!", {
+                position: "top-right",
+                style: {
+                    backgroundColor: "#f8d7da",
+                    color: "#721c24",
+                    borderLeft: "4px solid #e74c3c",
+                    borderRadius: "0.5rem",
+                    padding: "1.5rem",
+                    marginTop: "3rem"
+                },
+            });
+            return;
+        }
+
+        const selectedDate = startDate || new Date();
         onData({
             title,
             description,
-            date: selectedDate.toISOString(), // Convert Date to ISO string
+            date: selectedDate.toISOString(),
             category,
             priority,
         });
@@ -89,14 +105,14 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                     </div>
                     <div className="w-1/3 text-black">
                         <ParentDropdown
-                            label="category"
+                            label="Select-Category"
                             options={categoryOptions}
                             onSelect={(value) => setCategory(value || categoryOptions[0]?.label || "")}
                         />
                     </div>
                     <div className="w-1/3 text-black">
                         <ParentDropdown
-                            label="priority"
+                            label="Select-Priority"
                             options={priorityOptions}
                             onSelect={(value) => setPriority((value as "High" | "Medium" | "Low") || priorityOptions[0]?.label)}
                         />
@@ -117,6 +133,7 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                     </button>
                 </div>
             </div>
+            <Toaster />
         </div>
     );
 };
