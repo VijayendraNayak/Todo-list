@@ -10,14 +10,14 @@ interface TaskData {
   description: string;
   date: string | null;
   category: string;
-  priority: "High" | "Medium" | "Low" | -1; 
+  priority: "High" | "Medium" | "Low" | -1;
 }
 
 const sortItemsByPriority = (items: TaskData[]): TaskData[] => {
-  const priorityOrder: { [key: string]: number } = { 
-    "High": 0, 
-    "Medium": 1, 
-    "Low": 2, 
+  const priorityOrder: { [key: string]: number } = {
+    "High": 0,
+    "Medium": 1,
+    "Low": 2,
     "-1": 3  // Add handling for completed tasks
   };
 
@@ -62,7 +62,7 @@ const getCurrentItems = (
 ): TaskData[] => {
   // First sort by priority regardless of view
   const prioritySortedItems = sortItemsByPriority(todoItems);
-  
+
   switch (currentView) {
     case 'date':
       return dateSortedItems;
@@ -120,7 +120,7 @@ export default function Home() {
     }
   }, []);
   const handlePriorityChange = (title: string, newPriority: "High" | "Medium" | "Low" | -1) => {
-    const updatedTasks = todoItems.map(task => 
+    const updatedTasks = todoItems.map(task =>
       task.title === title ? { ...task, priority: newPriority } : task
     );
     setTodoItems(updatedTasks);
@@ -247,79 +247,76 @@ export default function Home() {
   return (
     <main className="h-screen pt-16">
       <div className="h-full flex flex-col max-w-2xl mx-auto p-8 gap-4">
-        <p className="text-3xl md:text-5xl font-semibold mb-8 font-sans">Daily To Do List</p>
-        <div className="relative max-w-2xl">
+        <p className="text-3xl md:text-5xl font-bold mb-8 font-sans">Daily To Do List</p>
+        <div className="relative max-w-full sm:max-w-2xl">
           <input
             type="text"
             value={formData.title}
             placeholder="Add new list item"
-            className="w-full px-4 py-4 rounded-md border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-400 placeholder:font-thin text-black text-xl font-bold pr-24"
+            className="w-full px-3 py-3 sm:px-4 sm:py-4 rounded-md border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-400 placeholder:font-thin text-black text-lg sm:text-xl font-bold pr-20 sm:pr-24"
             readOnly
             onClick={OpenPopup}
           />
           <button
-            className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-blue-500 text-white font-medium text-xl rounded-md hover:bg-blue-600 transition-colors duration-200"
+            className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 px-4 py-2 sm:px-6 sm:py-2.5 bg-blue-500 text-white font-medium text-base sm:text-xl rounded-md hover:bg-blue-600 transition-colors duration-200"
             onClick={() => handleOnStorage(formData)}
           >
             Add
           </button>
         </div>
 
-        <div className="flex gap-4 mt-4 flex-wrap">
+
+        <div className="flex gap-2 md:gap-4 mt-4 flex-wrap">
           <button
-            className={`px-4 py-2 rounded-full ${
-              activeFilter === 'date'
+            className={`px-4 py-2 rounded-full text-xs md:text-base ${activeFilter === 'date'
                 ? "bg-blue-100 text-blue-800 transform -translate-x-1"
                 : "bg-gray-200 text-gray-800"
-            } transition`}
+              } transition`}
             onClick={() => handleFilterChange('date')}
           >
             {activeFilter === 'date' ? "✓ By Date" : "By Date"}
           </button>
           <button
-            className={`px-4 py-2 rounded-full ${
-              activeFilter === 'home'
+            className={`px-4 py-2 rounded-full text-xs  md:text-base ${activeFilter === 'home'
                 ? "bg-blue-100 text-blue-800 transform -translate-x-1"
                 : "bg-gray-200 text-gray-800"
-            } transition`}
+              } transition`}
             onClick={() => handleFilterChange('home')}
           >
             {activeFilter === 'home' ? "✓ Home" : "Home"}
           </button>
           <button
-            className={`px-4 py-2 rounded-full ${
-              activeFilter === 'personal'
+            className={`px-4 py-2 rounded-full text-xs md:text-base ${activeFilter === 'personal'
                 ? "bg-blue-100 text-blue-800 transform -translate-x-1"
                 : "bg-gray-200 text-gray-800"
-            } transition`}
+              } transition`}
             onClick={() => handleFilterChange('personal')}
           >
-            {activeFilter === 'personal' ? "✓ Personal" : "Personal"}
+            {activeFilter === 'personal' ? "✓ Personal" : "Personal "}
           </button>
           <button
-            className={`px-4 py-2 rounded-full ${
-              activeFilter === 'work'
+            className={`px-4 py-2 rounded-full text-xs md:text-base ${activeFilter === 'work'
                 ? "bg-blue-100 text-blue-800 transform -translate-x-1"
                 : "bg-gray-200 text-gray-800"
-            } transition`}
+              } transition`}
             onClick={() => handleFilterChange('work')}
           >
             {activeFilter === 'work' ? "✓ Work" : "Work"}
           </button>
         </div>
 
-        <div className={`h-80 ${currentItems.length > 5 ? "overflow-y-scroll" : "overflow-y-auto"} max-w-2xl`}>
+        <div className={`h-80 ${currentItems.length > 5 ? "overflow-y-scroll" : "overflow-y-auto"} max-w-2xl `}>
           {currentItems.map((item, index) => (
             <Checkbox
-            key={index}
-            title={item.title}
-            description={item.description}
-            date={item.date}
-            category={item.category}
-            priority={item.priority}
-            onDelete={() => handleOnDelete(item.title)}
-            onPriorityChange={handlePriorityChange}  // Add this line
-          />
+              key={index}
+              title={item.title}
+              description={item.description}
+              date={item.date}
+              category={item.category}
+              priority={item.priority}
+              onDelete={() => handleOnDelete(item.title)}
+              onPriorityChange={handlePriorityChange}  // Add this line
+            />
           ))}
         </div>
 

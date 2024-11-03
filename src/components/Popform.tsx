@@ -105,14 +105,14 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                     </div>
                     <div className="w-1/3 text-black">
                         <ParentDropdown
-                            label="Select-Category"
+                            label="Category"
                             options={categoryOptions}
                             onSelect={(value) => setCategory(value || categoryOptions[0]?.label || "")}
                         />
                     </div>
                     <div className="w-1/3 text-black">
                         <ParentDropdown
-                            label="Select-Priority"
+                            label="Priority"
                             options={priorityOptions}
                             onSelect={(value) => setPriority((value as "High" | "Medium" | "Low") || priorityOptions[0]?.label)}
                         />
