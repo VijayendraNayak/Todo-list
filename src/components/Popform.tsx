@@ -19,7 +19,7 @@ interface PopformProps {
 interface TaskData {
     title: string;
     description: string;
-    date: string | null;  // Changed from Date | null to string | null
+    date: string | null; // Changed from Date | null to string | null
     category: string;
     priority: "High" | "Medium" | "Low";
 }
@@ -45,12 +45,13 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
     ];
 
     const handleOnDone = () => {
+        const selectedDate = startDate || new Date(); // Use today's date if no date is selected
         onData({
             title,
             description,
-            date: startDate ? startDate.toISOString() : null,  // Convert Date to ISO string
+            date: selectedDate.toISOString(), // Convert Date to ISO string
             category,
-            priority
+            priority,
         });
         onClose();
     };
