@@ -23,27 +23,22 @@ export default function Checkbox({
   onDelete,
   onPriorityChange
 }: CheckboxProps) {
-  const [isChecked, setIsChecked] = useState(priority === -1);
   const [isPopVisible, setIsPopVisible] = useState(false);
   const [isViewPopVisible, setIsViewPopVisible] = useState(false);
-  const [currentPriority, setCurrentPriority] = useState(priority);
-  const [originalPriority, setOriginalPriority] = useState(priority);  // Store the original priority
+  const [originalPriority, setOriginalPriority] = useState<"High" | "Medium" | "Low" | -1>(
+    priority === -1 ? "Medium" : priority // Set a default if completed
+  );
 
   const handleCheckboxToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const newCheckedState = !isChecked;
-    setIsChecked(newCheckedState);
-
-    if (newCheckedState) {
-      // Store the current priority before setting to -1
-      setOriginalPriority(currentPriority);
-      setCurrentPriority(-1);
-      onPriorityChange?.(title, -1);
-    } else {
-      // Restore the original priority when unchecking
-      setCurrentPriority(originalPriority);
-      onPriorityChange?.(title, originalPriority);
+    const newPriority = priority === -1 ? originalPriority : -1;
+    
+    if (newPriority === -1) {
+      // Storing original priority before marking as completed
+      setOriginalPriority(priority);
     }
+    
+    onPriorityChange?.(title, newPriority);
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -100,10 +95,13 @@ export default function Checkbox({
   };
 
   useEffect(() => {
-    setIsChecked(priority === -1);
-    setCurrentPriority(priority);
-    setOriginalPriority(priority === -1 ? originalPriority : priority);  // Update original priority only if not completed
+    // Update originalPriority only when priority changes and is not -1
+    if (priority !== -1) {
+      setOriginalPriority(priority);
+    }
   }, [priority]);
+
+  const isChecked = priority === -1;
 
   return (
     <div
@@ -133,9 +131,9 @@ export default function Checkbox({
                 {category}
               </span>
             )}
-            {currentPriority !== undefined && (
-              <span className={`${getPriorityColor(currentPriority)} font-medium min-w-[50px] sm:min-w-[60px]`}>
-                {currentPriority === -1 ? 'Completed' : currentPriority}
+            {priority !== undefined && (
+              <span className={`${getPriorityColor(priority)} font-medium min-w-[50px] sm:min-w-[60px]`}>
+                {priority === -1 ? 'Completed' : priority}
               </span>
             )}
           </div>
@@ -148,7 +146,7 @@ export default function Checkbox({
         >
           <Eye size={14} />
         </button>
-        {currentPriority !== -1 && (
+        {priority !== -1 && (
           <button
             className="text-green-500 p-1 rounded-full hover:bg-green-100"
             onClick={handleEditClick}
@@ -179,7 +177,7 @@ export default function Checkbox({
           description={description}
           date={formatDate(date)}
           category={category}
-          priority={currentPriority}
+          priority={priority}
           onClose={() => setIsViewPopVisible(false)}
         />
       )}
