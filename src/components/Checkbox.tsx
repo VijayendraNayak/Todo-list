@@ -25,7 +25,7 @@ export default function Checkbox({
   onPriorityChange
 }: CheckboxProps) {
   const [isChecked, setIsChecked] = useState(priority === -1);
-    const [isPopVisible, setIsPopVisible] = useState(false);
+  const [isPopVisible, setIsPopVisible] = useState(false);
   const [isViewPopVisible, setIsViewPopVisible] = useState(false);
   const [currentPriority, setCurrentPriority] = useState(priority);
 
@@ -33,7 +33,7 @@ export default function Checkbox({
     e.stopPropagation();
     const newCheckedState = !isChecked;
     setIsChecked(newCheckedState);
-    
+
     if (newCheckedState) {
       // If checkbox is being checked, set priority to -1
       setCurrentPriority(-1);
@@ -72,7 +72,7 @@ export default function Checkbox({
 
   const getPriorityColor = (priority: "High" | "Medium" | "Low" | -1) => {
     if (priority === -1) return 'text-gray-400';
-    
+
     switch (priority.toLowerCase()) {
       case 'high':
         return 'text-red-500';
@@ -110,17 +110,15 @@ export default function Checkbox({
       <div className="flex gap-2 items-center flex-1">
         <button
           onClick={handleCheckboxToggle}
-          className={`checkbox-component w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-            isChecked ? 'bg-green-500 border-green-500' : 'border-gray-300'
-          }`}
+          className={`checkbox-component w-5 h-5 rounded-full border-2 flex items-center justify-center ${isChecked ? 'bg-green-500 border-green-500' : 'border-gray-300'
+            }`}
         >
           {isChecked && <Check size={12} color="white" strokeWidth={2.5} />}
         </button>
         <div className="flex flex-col">
           <span
-            className={`text-base ${
-              isChecked ? 'text-gray-500 line-through group-hover:text-gray-400' : 'text-gray-700 group-hover:text-blue-400'
-            }`}
+            className={`text-base ${isChecked ? 'text-gray-500 line-through group-hover:text-gray-400' : 'text-gray-700 group-hover:text-blue-400'
+              }`}
           >
             {title}
           </span>
@@ -150,18 +148,21 @@ export default function Checkbox({
         >
           <Eye size={16} />
         </button>
-        <button
-          className="text-green-500 p-1 rounded-full hover:bg-green-100"
-          onClick={handleEditClick}
-        >
-          <Edit size={16} />
-        </button>
-        <button
-          className="text-red-500 p-1 rounded-full hover:bg-red-100"
-          onClick={handleDeleteClick}
-        >
-          <X size={16} />
-        </button>
+        {currentPriority !== -1 && (
+          <button
+            className={`text-green-500 p-1 rounded-full hover:bg-green-100`}
+          >
+            <Edit size={16} />
+          </button>
+        )}
+        {currentPriority !== -1 && (
+          <button
+            className="text-red-500 p-1 rounded-full hover:bg-red-100"
+            onClick={handleDeleteClick}
+          >
+            <X size={16} />
+          </button>
+        )}
       </div>
 
       {isPopVisible && (
