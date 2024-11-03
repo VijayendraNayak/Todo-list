@@ -122,7 +122,7 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
                     />
                 </div>
                 <div className="flex gap-4 items-center">
-                    <div className="relative w-1/3">
+                    <div className="relative w-1/3 text-sm md:text-md">
                         <DatePicker
                             selected={date}
                             onChange={(selectedDate) => {
@@ -131,7 +131,7 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
                             }}
                             className="border-2 w-full p-3 rounded-md"
                         />
-                        <LuCalendarCheck2 className="absolute right-2 top-3 text-gray-500 text-2xl" />
+                        <LuCalendarCheck2 className=" hidden md:flex absolute right-2 top-3 text-gray-500 text-2xl" />
                     </div>
                     <div className="w-1/3">
                         <ParentDropdown 

@@ -249,7 +249,7 @@ export default function Home() {
   return (
     <main className="h-screen pt-16">
       <div className="h-full flex flex-col max-w-2xl mx-auto p-8 gap-4">
-        <p className="text-5xl font-semibold mb-8 font-sans">Daily To Do List</p>
+        <p className="text-3xl md:text-5xl font-semibold mb-8 font-sans">Daily To Do List</p>
         <div className="relative max-w-2xl">
           <input
             type="text"

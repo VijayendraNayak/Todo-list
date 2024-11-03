@@ -20,7 +20,6 @@ interface CheckboxProps {
 export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
   const [isChecked, setIsChecked] = useState(false);
   const [isPopVisible, setIsPopVisible] = useState(false);
-  {console.log(data)}
 
   const handleDeleteClick = () => {
     onDelete(text);
@@ -70,8 +69,8 @@ export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
         <div className="flex flex-col">
           <span
             className={`text-base ${
-              isChecked ? 'text-gray-400 line-through' : 'text-gray-700'
-            } group-hover:text-blue-400`}
+              isChecked ? 'text-gray-500 line-through  group-hover:text-gray-400' : 'text-gray-700  group-hover:text-blue-400'
+            } `}
           >
             {text}
           </span>
