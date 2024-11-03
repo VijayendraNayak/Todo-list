@@ -1,5 +1,11 @@
 
-// Helper function for priority sorting
+export interface TaskData {
+  id: number;
+  title: string;
+  priority: "High" | "Medium" | "Low";
+  date?: string;
+  // Add other properties if necessary
+}
 export const sortItemsByPriority = (items: TaskData[]) => {
   const priorityOrder: { [key: string]: number } = { "High": 0, "Medium": 1, "Low": 2 };
   
