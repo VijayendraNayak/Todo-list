@@ -25,6 +25,7 @@ interface TaskData {
 }
 
 const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange, onData }) => {
+    // Ensure the form is only displayed if `isVisible` is true
     if (!isVisible) return null;
 
     const categoryOptions = [
@@ -41,8 +42,8 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("");
-    const [priority, setPriority] = useState("");
+    const [category, setCategory] = useState(categoryOptions[0]?.label || ""); // Default to first option or empty
+    const [priority, setPriority] = useState(priorityOptions[0]?.label || ""); // Default to first option or empty
 
     const handleOnDone = () => {
         onData({
@@ -79,7 +80,7 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                 <div className="flex gap-4 items-center">
                     <div className="relative w-1/3 text-sm md:text-md">
                         <DatePicker
-                            selected={startDate ?? new Date()}
+                            selected={startDate || new Date()} // fallback to `new Date()` if `startDate` is null
                             onChange={(date) => onDatechange(date as Date)}
                             placeholderText="Select a Date"
                             className="border-2 w-full p-3 rounded-md focus:outline-none focus:border-blue-400"
@@ -90,14 +91,14 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                         <ParentDropdown
                             label="category"
                             options={categoryOptions}
-                            onSelect={(value) => setCategory(value)}
+                            onSelect={(value) => setCategory(value || categoryOptions[0]?.label || "")} // fallback to first label if empty
                         />
                     </div>
                     <div className="w-1/3 text-black">
                         <ParentDropdown
                             label="priority"
                             options={priorityOptions}
-                            onSelect={(value) => setPriority(value)}
+                            onSelect={(value) => setPriority(value || priorityOptions[0]?.label || "")} // fallback to first label if empty
                         />
                     </div>
                 </div>

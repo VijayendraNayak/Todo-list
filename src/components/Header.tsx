@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-type Props = {}
+type Props = Record<string, never>;
 
 export default function Header({}: Props) {
   return (
@@ -20,5 +20,5 @@ export default function Header({}: Props) {
         </nav>
       </div>
     </header>
-  )
+  );
 }
