@@ -1,4 +1,3 @@
-import { TaskData } from './types';
 
 // Helper function for priority sorting
 export const sortItemsByPriority = (items: TaskData[]) => {

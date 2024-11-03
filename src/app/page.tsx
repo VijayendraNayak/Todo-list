@@ -5,7 +5,7 @@ import Popform from "@/components/Popform";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Toaster, toast } from 'sonner';
 import Swal from 'sweetalert2';
-import { sortItemsByPriority, sortItemsByDate, getCurrentItems } from '@/components/SortingUtils';
+import { sortItemsByPriority, sortItemsByDate, getCurrentItems } from '@/utility/SortingUtils';
 
 interface TaskData {
   title: string;
@@ -292,7 +292,7 @@ export default function Home() {
 
         <div className={`h-80 ${getCurrentItems(currentView, todoItems, prioritySortedItems, dateSortedItems).length > 5 ? "overflow-y-scroll" : "overflow-y-auto"} max-w-2xl`}>
           {getCurrentItems(currentView, todoItems, prioritySortedItems, dateSortedItems).map((item) => (
-            <Checkbox key={item.title} text={item.title} onDelete={handleOnDelete} />
+            <Checkbox key={item.title} text={item.title} data={item} onDelete={handleOnDelete} />
           ))}
         </div>
 

@@ -20,6 +20,7 @@ interface CheckboxProps {
 export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
   const [isChecked, setIsChecked] = useState(false);
   const [isPopVisible, setIsPopVisible] = useState(false);
+  {console.log(data)}
 
   const handleDeleteClick = () => {
     onDelete(text);
@@ -56,33 +57,33 @@ export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
   };
 
   return (
-    <div className="flex items-center gap-3 p-4 rounded-lg max-w-2xl group justify-between transition-colors duration-200 hover:bg-gray-50">
-      <div className="flex gap-3 items-center flex-1">
+    <div className="flex items-center gap-2 p-3 rounded-lg max-w-xl group justify-between transition-colors duration-200 hover:bg-gray-50">
+      <div className="flex gap-2 items-center flex-1">
         <button
           onClick={() => setIsChecked(!isChecked)}
-          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
             isChecked ? 'bg-green-500 border-green-500' : 'border-gray-300'
           }`}
         >
-          {isChecked && <Check size={14} color="white" strokeWidth={3} />}
+          {isChecked && <Check size={12} color="white" strokeWidth={2.5} />}
         </button>
         <div className="flex flex-col">
           <span
-            className={`text-lg ${
+            className={`text-base ${
               isChecked ? 'text-gray-400 line-through' : 'text-gray-700'
             } group-hover:text-blue-400`}
           >
             {text}
           </span>
           {data && (
-            <div className="flex gap-3 text-sm text-gray-500">
+            <div className="flex gap-2 text-xs text-gray-500">
               {data.date && (
                 <span className="flex items-center gap-1">
                   {formatDate(data.date)}
                 </span>
               )}
               {data.category && (
-                <span className="px-2 py-0.5 bg-gray-100 rounded-full text-xs">
+                <span className="px-1.5 py-0.5 bg-gray-100 rounded-full">
                   {data.category}
                 </span>
               )}
@@ -95,18 +96,18 @@ export default function Checkbox({ text, data, onDelete }: CheckboxProps) {
           )}
         </div>
       </div>
-      <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <div className="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <button
-          className="text-green-500 p-2 rounded-full hover:bg-green-500 hover:text-white"
+          className="text-green-500 p-1 rounded-full hover:bg-green-100"
           onClick={handleEditClick}
         >
-          <Edit size={20} />
+          <Edit size={16} />
         </button>
         <button
-          className="text-red-500 p-2 rounded-full hover:bg-red-500 hover:text-white"
+          className="text-red-500 p-1 rounded-full hover:bg-red-100"
           onClick={handleDeleteClick}
         >
-          <X size={20} />
+          <X size={16} />
         </button>
       </div>
       {isPopVisible && (

@@ -56,9 +56,9 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
     };
 
     return (
-        <div className="inset-0 fixed flex items-center justify-center bg-black bg-opacity-50 z-index-50">
+        <div className="inset-0 fixed flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="flex flex-col bg-white rounded-lg w-full max-w-xl p-6 shadow-lg gap-4">
-                <h2 className="text-4xl font-sans font-semibold my-2 flex justify-center mb-5">
+                <h2 className="text-2xl md:text-4xl font-sans font-semibold my-2 flex justify-center mb-5">
                     Add new Task
                 </h2>
                 <div className="flex flex-col gap-4">
@@ -67,26 +67,26 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Task Name"
-                        className="border-2 w-full p-3 rounded-md focus:outline-none focus:border-3 focus:border-blue-400"
+                        className="border-2 w-full p-3 rounded-md focus:outline-none focus:border-blue-400"
                     />
                     <textarea
                         placeholder="Description"
-                        className="border-2 focus:outline-none focus:border-3 w-full p-3 rounded-md focus:border-blue-400"
+                        className="border-2 focus:outline-none w-full p-3 rounded-md focus:border-blue-400"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
                 </div>
                 <div className="flex gap-4 items-center">
-                    <div className="relative w-1/3">
+                    <div className="relative w-1/3 text-sm md:text-md">
                         <DatePicker
                             selected={startDate ?? new Date()}
                             onChange={(date) => onDatechange(date as Date)}
                             placeholderText="Select a Date"
                             className="border-2 w-full p-3 rounded-md focus:outline-none focus:border-blue-400"
                         />
-                        <LuCalendarCheck2 className="absolute right-2 top-3 text-gray-500 text-2xl" />
+                        <LuCalendarCheck2 className="hidden md:flex absolute right-2 top-3 md:top-4 text-gray-500 text-xl md:text-2xl" />
                     </div>
-                    <div className="w-1/3 text-black">
+                    <div className="w-1/3 text-black ">
                         <ParentDropdown
                             label="category"
                             options={categoryOptions}
@@ -103,13 +103,13 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                 </div>
                 <div className="flex gap-4 justify-center">
                     <button
-                        className="p-2 px-5 bg-gray-400 rounded-md cursor-pointer flex items-center gap-2 text-white font-sans font-semibold hover:bg-gray-600 transition hover:scale-110 duration-300"
+                        className="p-2 px-5 bg-gray-400 rounded-md text-white font-sans font-semibold hover:bg-gray-600 transition hover:scale-110 duration-300"
                         onClick={onClose}
                     >
                         Cancel
                     </button>
                     <button
-                        className="p-2 px-5 bg-blue-400 rounded-md cursor-pointer text-white font-sans font-semibold hover:bg-blue-600 transition hover:scale-110 duration-300"
+                        className="p-2 px-5 bg-blue-400 rounded-md text-white font-sans font-semibold hover:bg-blue-600 transition hover:scale-110 duration-300"
                         onClick={handleOnDone}
                     >
                         Done
