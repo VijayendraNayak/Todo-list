@@ -151,6 +151,7 @@ export default function Checkbox({
         {currentPriority !== -1 && (
           <button
             className={`text-green-500 p-1 rounded-full hover:bg-green-100`}
+            onClick={handleEditClick}
           >
             <Edit size={16} />
           </button>
