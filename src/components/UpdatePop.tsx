@@ -100,9 +100,9 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
 
     return (
         <div className="inset-0 fixed flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="flex flex-col bg-white rounded-lg w-full max-w-xl p-6 shadow-lg gap-4">
-                <h2 className="text-4xl font-sans font-semibold my-2 flex justify-center mb-5">Edit Task</h2>
-                <div className="flex flex-col gap-4">
+            <div className="flex flex-col bg-white rounded-lg w-full max-w-md p-4 sm:p-6 shadow-lg gap-4 mx-4 sm:mx-0"> {/* Adjusted max-w and padding */}
+                <h2 className="text-3xl font-semibold text-center mb-4">Edit Task</h2> {/* Reduced font size */}
+                <div className="flex flex-col gap-3">
                     <input
                         type="text"
                         value={formTitle}
@@ -110,7 +110,7 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
                             setFormTitle(e.target.value);
                             handleChange();
                         }}
-                        className="border-2 w-full p-3 rounded-md"
+                        className="border-2 w-full p-2 rounded-md" // Adjusted padding
                     />
                     <textarea
                         value={description}
@@ -118,20 +118,20 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
                             setDescription(e.target.value);
                             handleChange();
                         }}
-                        className="border-2 w-full p-3 rounded-md"
+                        className="border-2 w-full p-2 rounded-md" // Adjusted padding
                     />
                 </div>
-                <div className="flex gap-4 items-center">
-                    <div className="relative w-1/3 text-sm md:text-md">
+                <div className="flex gap-3 items-center">
+                    <div className="relative w-1/3 text-sm">
                         <DatePicker
                             selected={date}
                             onChange={(selectedDate) => {
                                 setDate(selectedDate);
                                 handleChange();
                             }}
-                            className="border-2 w-full p-3 rounded-md"
+                            className="border-2 w-full p-2 rounded-md" // Adjusted padding
                         />
-                        <LuCalendarCheck2 className=" hidden md:flex absolute right-2 top-3 text-gray-500 text-2xl" />
+                        <LuCalendarCheck2 className="hidden md:flex absolute right-2 top-2 text-gray-500 text-xl" /> {/* Reduced icon size */}
                     </div>
                     <div className="w-1/3">
                         <ParentDropdown 
@@ -164,11 +164,11 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
                         />
                     </div>
                 </div>
-                <div className="flex gap-4 justify-center">
-                    <button className="p-2 px-5 bg-gray-400 rounded-md cursor-pointer text-white font-sans font-semibold hover:bg-gray-600 transition hover:scale-110 duration-300" onClick={onClose}>
+                <div className="flex gap-3 justify-center">
+                    <button className="p-2 px-4 bg-gray-400 rounded-md cursor-pointer text-white font-semibold hover:bg-gray-600 transition hover:scale-110 duration-300" onClick={onClose}>
                         Cancel
                     </button>
-                    <button className="p-2 px-5 bg-blue-400 rounded-md cursor-pointer text-white font-sans font-semibold hover:bg-blue-600 transition hover:scale-110 duration-300" onClick={handleSave}>
+                    <button className="p-2 px-4 bg-blue-400 rounded-md cursor-pointer text-white font-semibold hover:bg-blue-600 transition hover:scale-110 duration-300" onClick={handleSave}>
                         Save Changes
                     </button>
                 </div>

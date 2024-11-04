@@ -15,6 +15,7 @@ interface PopformProps {
     startDate: Date | null;
     onDatechange: (date: Date) => void;
     onData: (data: TaskData) => void;
+    existingTasks: TaskData[];  // Add this line
 }
 
 interface TaskData {
@@ -22,10 +23,10 @@ interface TaskData {
     description: string;
     date: string | null;
     category: string;
-    priority: "High" | "Medium" | "Low";
+    priority: "High" | "Medium" | "Low"|-1;
 }
 
-const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange, onData }) => {
+const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange, onData, existingTasks }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("Home");
@@ -45,8 +46,21 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
         { label: "Low" as const, icon: FaCheckCircle, color: "text-green-500" },
     ];
 
+    const isDuplicateTask = (newTask: TaskData): boolean => {
+        return existingTasks.some(task => {
+            const sameTitle = task.title.toLowerCase().trim() === newTask.title.toLowerCase().trim();
+            const sameDate = task.date === newTask.date;
+            const sameCategory = task.category === newTask.category;
+            const samePriority = task.priority === newTask.priority;
+            const sameDescription = task.description.toLowerCase().trim() === newTask.description.toLowerCase().trim();
+    
+            return sameTitle && sameDate && sameCategory && samePriority && sameDescription;
+        });
+    };
+
     const handleOnDone = () => {
-        if (!title.trim() || !description.trim() || !category || !priority ) {
+        // Check for empty fields
+        if (!title.trim() || !description.trim() || !category || !priority) {
             toast.error("Please fill in all fields!", {
                 position: "top-right",
                 style: {
@@ -62,46 +76,65 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
         }
 
         const selectedDate = startDate || new Date();
-        onData({
-            title,
-            description,
+        const newTask = {
+            title: title.trim(),
+            description: description.trim(),
             date: selectedDate.toISOString(),
             category,
             priority,
-        });
+        };
+
+        // Check for duplicates
+        if (isDuplicateTask(newTask)) {
+            toast.error("This task already exists!", {
+                position: "top-right",
+                style: {
+                    backgroundColor: "#f8d7da",
+                    color: "#721c24",
+                    borderLeft: "4px solid #e74c3c",
+                    borderRadius: "0.5rem",
+                    padding: "1.5rem",
+                    marginTop: "3rem"
+                },
+            });
+            return;
+        }
+
+        // If all checks pass, create the task
+        onData(newTask);
         onClose();
     };
 
     return (
-        <div className="inset-0 fixed flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="flex flex-col bg-white rounded-lg w-full max-w-xl p-6 shadow-lg gap-4">
-                <h2 className="text-2xl md:text-4xl font-sans font-semibold my-2 flex justify-center mb-5">
+        <div className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50`}>
+            <div className="flex flex-col bg-white rounded-lg w-full max-w-md p-4 sm:p-6 shadow-lg gap-4 mx-4 sm:mx-0">
+                <h2 className="text-xl sm:text-2xl md:text-4xl font-sans font-semibold text-center mb-4">
                     Add new Task
                 </h2>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2 sm:gap-4">
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Task Name"
-                        className="border-2 w-full p-3 rounded-md focus:outline-none focus:border-blue-400"
+                        className="border-2 w-full p-2 sm:p-3 rounded-md focus:outline-none focus:border-blue-400"
                     />
                     <textarea
                         placeholder="Description"
-                        className="border-2 focus:outline-none w-full p-3 rounded-md focus:border-blue-400"
+                        className="border-2 w-full p-2 sm:p-3 rounded-md focus:outline-none focus:border-blue-400"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
                 </div>
-                <div className="flex gap-4 items-center">
+                <div className="flex gap-2 sm:gap-4 items-center">
                     <div className="relative w-1/3 text-sm md:text-md">
                         <DatePicker
                             selected={startDate || new Date()}
                             onChange={(date) => onDatechange(date as Date)}
                             placeholderText="Select a Date"
-                            className="border-2 w-full p-3 rounded-md focus:outline-none focus:border-blue-400"
+                            className="border-2 w-full p-2 sm:p-3 rounded-md focus:outline-none focus:border-blue-400"
                         />
-                        <LuCalendarCheck2 className="hidden md:flex absolute right-2 top-3 md:top-4 text-gray-500 text-xl md:text-2xl" />
+                        <LuCalendarCheck2 className="hidden absolute md:flex right-2 top-3 text-gray-500 text-lg" />
                     </div>
                     <div className="w-1/3 text-black">
                         <ParentDropdown
@@ -118,15 +151,15 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
                         />
                     </div>
                 </div>
-                <div className="flex gap-4 justify-center">
+                <div className="flex gap-2 sm:gap-4 justify-center mt-4">
                     <button
-                        className="p-2 px-5 bg-gray-400 rounded-md text-white font-sans font-semibold hover:bg-gray-600 transition hover:scale-110 duration-300"
+                        className="p-2 px-4 bg-gray-400 rounded-md text-white font-sans font-semibold hover:bg-gray-600 transition duration-200"
                         onClick={onClose}
                     >
                         Cancel
                     </button>
                     <button
-                        className="p-2 px-5 bg-blue-400 rounded-md text-white font-sans font-semibold hover:bg-blue-600 transition hover:scale-110 duration-300"
+                        className="p-2 px-4 bg-blue-400 rounded-md text-white font-sans font-semibold hover:bg-blue-600 transition duration-200"
                         onClick={handleOnDone}
                     >
                         Done

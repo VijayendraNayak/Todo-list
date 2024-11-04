@@ -269,8 +269,8 @@ export default function Home() {
         <div className="flex gap-2 md:gap-4 mt-4 flex-wrap">
           <button
             className={`px-4 py-2 rounded-full text-xs md:text-base ${activeFilter === 'date'
-                ? "bg-blue-100 text-blue-800 transform -translate-x-1"
-                : "bg-gray-200 text-gray-800"
+              ? "bg-blue-100 text-blue-800 transform -translate-x-1"
+              : "bg-gray-200 text-gray-800"
               } transition`}
             onClick={() => handleFilterChange('date')}
           >
@@ -278,8 +278,8 @@ export default function Home() {
           </button>
           <button
             className={`px-4 py-2 rounded-full text-xs  md:text-base ${activeFilter === 'home'
-                ? "bg-blue-100 text-blue-800 transform -translate-x-1"
-                : "bg-gray-200 text-gray-800"
+              ? "bg-blue-100 text-blue-800 transform -translate-x-1"
+              : "bg-gray-200 text-gray-800"
               } transition`}
             onClick={() => handleFilterChange('home')}
           >
@@ -287,8 +287,8 @@ export default function Home() {
           </button>
           <button
             className={`px-4 py-2 rounded-full text-xs md:text-base ${activeFilter === 'personal'
-                ? "bg-blue-100 text-blue-800 transform -translate-x-1"
-                : "bg-gray-200 text-gray-800"
+              ? "bg-blue-100 text-blue-800 transform -translate-x-1"
+              : "bg-gray-200 text-gray-800"
               } transition`}
             onClick={() => handleFilterChange('personal')}
           >
@@ -296,8 +296,8 @@ export default function Home() {
           </button>
           <button
             className={`px-4 py-2 rounded-full text-xs md:text-base ${activeFilter === 'work'
-                ? "bg-blue-100 text-blue-800 transform -translate-x-1"
-                : "bg-gray-200 text-gray-800"
+              ? "bg-blue-100 text-blue-800 transform -translate-x-1"
+              : "bg-gray-200 text-gray-800"
               } transition`}
             onClick={() => handleFilterChange('work')}
           >
@@ -330,14 +330,16 @@ export default function Home() {
             Clear All
           </button>
         </div>
-
-        <Popform
-          isVisible={showPopup}
-          onClose={ClosePopup}
-          startDate={startDate}
-          onDatechange={handleDateChange}
-          onData={handleOnStorage}
-        />
+        <div className="">
+          <Popform
+            isVisible={showPopup}
+            onClose={ClosePopup}
+            startDate={startDate}
+            onDatechange={handleDateChange}
+            onData={handleOnStorage}
+            existingTasks={todoItems}  // Pass the todoItems array
+          />
+        </div>
       </div>
     </main>
   );

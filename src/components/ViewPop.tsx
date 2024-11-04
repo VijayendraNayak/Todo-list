@@ -6,7 +6,7 @@ interface ViewPopProps {
   description: string;
   date: string;
   category: string;
-  priority: string|number;
+  priority: string | number;
   onClose: () => void;
 }
 
@@ -15,26 +15,37 @@ const ViewPop: FC<ViewPopProps> = ({ isVisible, title, description, date, catego
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-blue-100 rounded-lg w-full max-w-md p-6 shadow-lg">
-        <h2 className="text-3xl font-bold mb-4 text-center">Task Details</h2>
-        <div className="mb-2">
-          <strong>Title:</strong> <span>{title}</span>
+      <div className="bg-white rounded-lg w-full max-w-xs sm:max-w-md p-6 sm:p-8 shadow-xl mx-4">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-blue-700">Task Details</h2>
+        
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <strong className="text-gray-700 min-w-[100px]">Title:</strong>
+            <span className="text-gray-900 font-medium">{title}</span>
+          </div>
+          <div className="flex gap-2">
+            <strong className="text-gray-700 min-w-[100px]">Description:</strong>
+            <span className="text-gray-900 font-medium">{description}</span>
+          </div>
+          <div className="flex gap-2">
+            <strong className="text-gray-700 min-w-[100px]">Date:</strong>
+            <span className="text-gray-900 font-medium">{date}</span>
+          </div>
+          <div className="flex gap-2">
+            <strong className="text-gray-700 min-w-[100px]">Category:</strong>
+            <span className="text-gray-900 font-medium">{category}</span>
+          </div>
+          <div className="flex gap-2">
+            <strong className="text-gray-700 min-w-[100px]">Priority:</strong>
+            <span className={`font-medium ${priority === "High" ? "text-red-500" : priority === "Medium" ? "text-yellow-500" : "text-green-500"}`}>
+              {priority}
+            </span>
+          </div>
         </div>
-        <div className="mb-2">
-          <strong>Description:</strong> <span>{description}</span>
-        </div>
-        <div className="mb-2">
-          <strong>Date:</strong> <span>{date}</span>
-        </div>
-        <div className="mb-2">
-          <strong>Category:</strong> <span>{category}</span>
-        </div>
-        <div className="mb-2">
-          <strong>Priority:</strong> <span>{priority}</span>
-        </div>
-        <div className='flex justify-center '>
+
+        <div className="flex justify-center mt-8">
           <button
-            className="mt-4 px-8 py-3 font-semibold bg-blue-500 text-white rounded-md flex justify-center hover:bg-blue-600"
+            className="px-8 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 transition duration-200 ease-in-out transform hover:scale-105 active:scale-95"
             onClick={onClose}
           >
             Close
