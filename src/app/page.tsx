@@ -4,6 +4,7 @@ import Checkbox from "@/components/Checkbox";
 import Popform from "@/components/Popform";
 import { Toaster, toast } from 'sonner';
 import Swal from 'sweetalert2';
+import Decorations from "@/components/Decorations";
 
 interface TaskData {
   title: string;
@@ -246,6 +247,7 @@ export default function Home() {
 
   return (
     <main className="h-screen pt-16">
+      <Decorations />
       <div className="h-full flex flex-col max-w-2xl mx-auto p-8 gap-4">
         <p className="text-3xl md:text-5xl font-bold mb-8 font-sans">Daily To Do List</p>
         <div className="relative max-w-full sm:max-w-2xl">
