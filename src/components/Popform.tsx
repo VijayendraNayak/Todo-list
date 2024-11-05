@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { LuCalendarCheck2 } from "react-icons/lu";
@@ -15,7 +15,7 @@ interface PopformProps {
     startDate: Date | null;
     onDatechange: (date: Date) => void;
     onData: (data: TaskData) => void;
-    existingTasks: TaskData[];  // Add this line
+    existingTasks: TaskData[];
 }
 
 interface TaskData {
@@ -23,7 +23,7 @@ interface TaskData {
     description: string;
     date: string | null;
     category: string;
-    priority: "High" | "Medium" | "Low"|-1;
+    priority: "High" | "Medium" | "Low" | -1;
 }
 
 const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange, onData, existingTasks }) => {
@@ -31,6 +31,16 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("Home");
     const [priority, setPriority] = useState<"High" | "Medium" | "Low">("High");
+
+    // Reset fields when form is opened
+    useEffect(() => {
+        if (isVisible) {
+            setTitle("");
+            setDescription("");
+            setCategory("Home");
+            setPriority("High");
+        }
+    }, [isVisible]);
 
     if (!isVisible) return null;
 
@@ -53,13 +63,12 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
             const sameCategory = task.category === newTask.category;
             const samePriority = task.priority === newTask.priority;
             const sameDescription = task.description.toLowerCase().trim() === newTask.description.toLowerCase().trim();
-    
+
             return sameTitle && sameDate && sameCategory && samePriority && sameDescription;
         });
     };
 
     const handleOnDone = () => {
-        // Check for empty fields
         if (!title.trim() || !description.trim() || !category || !priority) {
             toast.error("Please fill in all fields!", {
                 position: "top-right",
@@ -84,7 +93,6 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
             priority,
         };
 
-        // Check for duplicates
         if (isDuplicateTask(newTask)) {
             toast.error("This task already exists!", {
                 position: "top-right",
@@ -100,8 +108,14 @@ const Popform: FC<PopformProps> = ({ isVisible, onClose, startDate, onDatechange
             return;
         }
 
-        // If all checks pass, create the task
         onData(newTask);
+        
+        // Clear fields after successful submission
+        setTitle("");
+        setDescription("");
+        setCategory("Home");
+        setPriority("High");
+
         onClose();
     };
 

@@ -101,14 +101,14 @@ export default function Home() {
           description: "This is the first default task",
           date: new Date('2024-01-01').toISOString(),
           category: "Work",
-          priority: "Low"
+          priority: "Medium"
         },
         {
           title: "Sample Task 2",
           description: "This is the second default task",
           date: new Date('2024-02-01').toISOString(),
           category: "Personal",
-          priority: "High"
+          priority: "Low"
         }
       ];
       localStorage.setItem("todoItems", JSON.stringify(defaultItems));

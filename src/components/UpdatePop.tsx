@@ -46,7 +46,7 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
         }
     }, [title]);
 
-    const handleSave = () => {
+    const handleSave = async() => {
         if (!isModified) {
             toast.warning("No changes made to update!", {
                 position: "top-right",
@@ -90,6 +90,8 @@ const UpdatePop: FC<PopformProps> = ({ isVisible, title, onClose }) => {
         });
 
         onClose();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        window.location.reload();
     };
 
     const handleChange = () => {

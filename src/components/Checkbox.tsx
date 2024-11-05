@@ -25,20 +25,25 @@ export default function Checkbox({
 }: CheckboxProps) {
   const [isPopVisible, setIsPopVisible] = useState(false);
   const [isViewPopVisible, setIsViewPopVisible] = useState(false);
-  const [originalPriority, setOriginalPriority] = useState<"High" | "Medium" | "Low" | -1>(
-    priority === -1 ? "Medium" : priority // Set a default if completed
-  );
+  const [originalPriority, setOriginalPriority] = useState<"High" | "Medium" | "Low" | -1>(priority)
+  const prio=priority
+  // console.log(priority)
 
   const handleCheckboxToggle = (e: React.MouseEvent) => {
+    // console.log(priority)
     e.stopPropagation();
     const newPriority = priority === -1 ? originalPriority : -1;
-    
+    // console.log(priority)
+
     if (newPriority === -1) {
       // Storing original priority before marking as completed
-      setOriginalPriority(priority);
+      setOriginalPriority(prio);
     }
-    
+    // console.log(priority)
+
     onPriorityChange?.(title, newPriority);
+    // console.log(priority)
+
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -114,7 +119,9 @@ export default function Checkbox({
         >
           {isChecked && <Check size={10} color="white" strokeWidth={2.5} />}
         </button>
-        <div className="flex flex-col">
+        <div className="flex flex-col"
+          onClick={handleCheckboxToggle}
+        >
           <span
             className={`text-sm sm:text-base ${isChecked ? 'text-gray-500 line-through group-hover:text-gray-400' : 'text-gray-700 group-hover:text-blue-400'}`}
           >
