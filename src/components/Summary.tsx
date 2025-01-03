@@ -23,7 +23,7 @@ const Summary = ({ togglesummary }: Props) => {
     const fetchMostRecentReservation = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch("http://localhost:5000/api/get");
+        const response = await fetch("https://backend-beryl-omega.vercel.app/api/get");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

@@ -110,7 +110,7 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/create", {
+      const response = await fetch("https://backend-beryl-omega.vercel.app/api/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +149,7 @@ export default function Home() {
   const handleGetReservations = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/get");
+      const response = await fetch("https://backend-beryl-omega.vercel.app/api/get");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -191,7 +191,7 @@ export default function Home() {
           setIsDeleting(id);
           try {
             const response = await fetch(
-              `http://localhost:5000/api/delete/${id}`,
+              `https://backend-beryl-omega.vercel.app/api/delete/${id}`,
               {
                 method: "DELETE",
               }

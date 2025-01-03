@@ -36,7 +36,7 @@ const Slot = ({ handletimepopup }: Props) => {
   useEffect(() => {
     const getdata = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/get");
+        const res = await fetch("https://backend-beryl-omega.vercel.app/api/get");
         const result = await res.json();
         setData(result.reservations); // Update reservations
       } catch (err) {
@@ -103,7 +103,7 @@ const Slot = ({ handletimepopup }: Props) => {
       setTime(selectedSlot);
 
       try {
-        const response = await fetch("http://localhost:5000/api/create", {
+        const response = await fetch("https://backend-beryl-omega.vercel.app/api/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
