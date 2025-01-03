@@ -32,13 +32,12 @@ const Slot = ({ handletimepopup }: Props) => {
     "10:00 PM": true,
   });
 
-  // Fetch reservations from the backend
   useEffect(() => {
     const getdata = async () => {
       try {
         const res = await fetch("https://backend-beryl-omega.vercel.app/api/get");
         const result = await res.json();
-        setData(result.reservations); // Update reservations
+        setData(result.reservations);
       } catch (err) {
         console.error(err);
       }
@@ -46,7 +45,6 @@ const Slot = ({ handletimepopup }: Props) => {
     getdata();
   }, []);
 
-  // Update slot availability based on the selected date
   useEffect(() => {
     const updatedSlots = {
       "12:00 PM": true,
@@ -58,9 +56,7 @@ const Slot = ({ handletimepopup }: Props) => {
     };
 
     data.forEach((reservation) => {
-      const reservationDate = new Date(reservation.date)
-        .toISOString()
-        .split("T")[0];
+      const reservationDate = new Date(reservation.date).toISOString().split("T")[0];
       const selectedDateStr = selectedDate.toISOString().split("T")[0];
 
       if (reservationDate === selectedDateStr) {
@@ -107,18 +103,16 @@ const Slot = ({ handletimepopup }: Props) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            name: "John Doe", // Replace with dynamic user input
-            phone: "1234567890", // Replace with dynamic user input
-            guest: 2, // Replace with dynamic user input
+            name: "John Doe",
+            phone: "1234567890",
+            guest: 2,
             date: selectedDate,
             time: selectedSlot,
           }),
         });
 
         if (response.ok) {
-          toast.success(
-            `You have successfully reserved the slot ${selectedSlot}`
-          );
+          toast.success(`You have successfully reserved the slot ${selectedSlot}`);
           handletimepopup();
         } else {
           throw new Error("Failed to create reservation");
@@ -138,62 +132,89 @@ const Slot = ({ handletimepopup }: Props) => {
   };
 
   return (
-    <div className="inset-0 fixed bg-black bg-opacity-50 z-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Toaster richColors={true} />
-      <div className="bg-white p-4 rounded-lg w-full max-w-md h-auto my-auto flex flex-col gap-4 justify-center relative">
-        <div className="text-3xl font-bold text-center">Select Time Slot</div>
-        <div className="absolute right-3 top-3">
-          <IoClose
-            className="font-bold text-2xl cursor-pointer text-white bg-red-500 rounded-lg"
-            onClick={handletimepopup}
-          />
-        </div>
-        <input
-          type="date"
-          className="p-2 border-2 text-center flex justify-center rounded-lg border-black w-full"
-          onChange={(e) => setSelectedDate(new Date(e.target.value))}
-        />
-        {hide && (
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-md mx-auto relative overflow-hidden">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800">Select Time Slot</h2>
           <button
-            className="bg-purple-500 rounded-lg hover:bg-purple-600 p-2 mx-4 text-white flex justify-center w-full"
-            onClick={checkDate}
+            onClick={handletimepopup}
+            className="absolute right-4 top-4 p-1 rounded-lg bg-red-500 hover:bg-red-600 transition-colors"
           >
-            Check available timeslots
+            <IoClose className="text-white text-xl" />
           </button>
-        )}
-        {!hide && (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
-              {Object.keys(slotAvailability).map((time) => (
-                <div
-                  key={time}
-                  className={`p-2 rounded-lg cursor-pointer transition-all hover:-translate-y-1 text-center ${
-                    slotAvailability[time]
-                      ? selectedSlot === time
-                        ? "bg-blue-500 text-white"
-                        : "bg-green-500 text-white"
-                      : "bg-red-500 text-white"
-                  }`}
-                  onClick={() => handleSelect(time)}
-                >
-                  {time}
+        </div>
+
+        {/* Content */}
+        <div className="p-6 space-y-6">
+          {/* Date Input */}
+          <div className="space-y-4">
+            <input
+              type="date"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg text-center focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
+              onChange={(e) => setSelectedDate(new Date(e.target.value))}
+            />
+            
+            {hide && (
+              <button
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                onClick={checkDate}
+              >
+                Check available timeslots
+              </button>
+            )}
+          </div>
+
+          {/* Time Slots Grid */}
+          {!hide && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {Object.keys(slotAvailability).map((time) => (
+                  <button
+                    key={time}
+                    onClick={() => handleSelect(time)}
+                    className={`p-3 rounded-lg font-medium transition-all transform hover:-translate-y-1 hover:shadow-md
+                      ${
+                        slotAvailability[time]
+                          ? selectedSlot === time
+                            ? "bg-blue-500 text-white shadow-blue-200"
+                            : "bg-green-500 text-white shadow-green-200"
+                          : "bg-red-500 text-white shadow-red-200 cursor-not-allowed"
+                      }
+                    `}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+
+              {/* Legend */}
+              <div className="flex flex-wrap gap-4 justify-center text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-red-500 rounded"></div>
+                  <span>Unavailable</span>
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-green-500 rounded"></div>
+                  <span>Available</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                  <span>Selected</span>
+                </div>
+              </div>
+
+              {/* Confirm Button */}
+              <button
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                onClick={handleselectedtime}
+              >
+                {selectedSlot ? "Confirm Reservation" : "Select a time slot"}
+              </button>
             </div>
-            <div className="flex gap-4 mt-4 items-center">
-              <div className="w-5 h-5 bg-red-500 text-white text-center flex items-center justify-center"></div>
-              <span>Unavailable Slot</span>
-              <div className="w-5 h-5 bg-green-500 text-white text-center flex items-center justify-center ml-4"></div>
-              <span>Available Slot</span>
-            </div>
-            <button
-              className="bg-purple-500 font-semibold rounded-lg hover:bg-purple-600 p-2 mx-4 text-white flex justify-center mt-4 w-full"
-              onClick={handleselectedtime}
-            >
-              {selectedSlot ? "Confirm Reservation" : "Select another date"}
-            </button>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
