@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
+import { DateProvider } from "@/context/DateContext";
+import { TimeProvider } from "@/context/TimeContext"; // Import TimeProvider
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -15,7 +17,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Todo-list",
+  title: "FineDine",
   description: "Create a personalised todo-list",
 };
 
@@ -28,13 +30,16 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Link to the favicon in the public folder */}
-        <link rel="icon" href="/cropped_logo.png" type="image/png" sizes="32x32" />
-        </head>
+        <link rel="icon" href="/finedine.jpeg" type="image/png" sizes="32x32" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header />
-        {children}
+        {/* Wrap the children with both DateProvider and TimeProvider */}
+        <DateProvider>
+          <TimeProvider>{children}</TimeProvider>
+        </DateProvider>
       </body>
     </html>
   );

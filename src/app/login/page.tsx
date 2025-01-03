@@ -41,7 +41,7 @@ const Page = () => {
         <div className="absolute inset-0 rounded-lg opacity-30 blur-lg"></div>
         <div className='flex justify-center relative z-10'>
           <Image 
-            src="/cropped_logo.png" 
+            src="/finedine.jpeg" 
             alt="Logo" 
             width={60} 
             height={60} 

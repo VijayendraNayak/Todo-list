@@ -1,347 +1,391 @@
 "use client";
-import { useState, useEffect } from "react";
-import Checkbox from "@/components/Checkbox";
-import Popform from "@/components/Popform";
-import { Toaster, toast } from 'sonner';
-import Swal from 'sweetalert2';
+import React, { useState, useEffect, useRef } from "react";
+import { useDateContext } from "@/context/DateContext";
+import { useTimeContext } from "@/context/TimeContext";
+import { toast, Toaster } from "sonner";
+import Swal from "sweetalert2";
 import Decorations from "@/components/Decorations";
+import Slot from "@/components/Slot";
+import Summary from "@/components/Summary";
 
-interface TaskData {
-  title: string;
-  description: string;
-  date: string | null;
-  category: string;
-  priority: "High" | "Medium" | "Low" | -1;
+interface DateForm {
+  _id?: string;
+  name: string;
+  phone: string;
+  guest: number;
+  date: Date | null;
+  time: string | null;
 }
 
-const sortItemsByPriority = (items: TaskData[]): TaskData[] => {
-  const priorityOrder: { [key: string]: number } = {
-    "High": 0,
-    "Medium": 1,
-    "Low": 2,
-    "-1": 3  // Add handling for completed tasks
-  };
-
-  return [...items].sort((a, b) => {
-    const priorityA = priorityOrder[a.priority.toString()] ?? 4;
-    const priorityB = priorityOrder[b.priority.toString()] ?? 4;
-
-    if (priorityA === priorityB && a.date && b.date) {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    }
-
-    return priorityA - priorityB;
-  });
-};
-
-
-const sortItemsByDate = (items: TaskData[]): TaskData[] => {
-  const currentDate = new Date().getTime();
-
-  return [...items].sort((a, b) => {
-    if (!a.date) return 1;
-    if (!b.date) return -1;
-
-    const dateA = new Date(a.date).getTime();
-    const dateB = new Date(b.date).getTime();
-
-    const diffA = Math.abs(dateA - currentDate);
-    const diffB = Math.abs(dateB - currentDate);
-
-    return diffA - diffB;
-  });
-};
-
-const filterItemsByCategory = (items: TaskData[], category: string): TaskData[] => {
-  return items.filter(item => item.category.toLowerCase() === category.toLowerCase());
-};
-
-const getCurrentItems = (
-  currentView: string,
-  todoItems: TaskData[],
-  dateSortedItems: TaskData[]
-): TaskData[] => {
-  // First sort by priority regardless of view
-  const prioritySortedItems = sortItemsByPriority(todoItems);
-
-  switch (currentView) {
-    case 'date':
-      return dateSortedItems;
-    case 'home':
-      return filterItemsByCategory(prioritySortedItems, 'home');
-    case 'personal':
-      return filterItemsByCategory(prioritySortedItems, 'personal');
-    case 'work':
-      return filterItemsByCategory(prioritySortedItems, 'work');
-    default:
-      return prioritySortedItems;
-  }
-};
+interface Reservation extends Omit<DateForm, "date"> {
+  date: string | Date | null;
+  _id?: string;
+}
 
 export default function Home() {
-  const [showPopup, setShowPopup] = useState(false);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>('default');
-  const [dateSortCount, setDateSortCount] = useState(0);
-  const [todoItems, setTodoItems] = useState<TaskData[]>([]);
-  const [dateSortedItems, setDateSortedItems] = useState<TaskData[]>([]);
-  const [formData, setFormData] = useState<TaskData>({
-    title: "",
-    description: "",
+  const [timePopup, setTimePopup] = useState<boolean>(false);
+  const [formdata, setFormdata] = useState<DateForm>({
+    name: "",
+    phone: "",
+    guest: 0,
     date: null,
-    category: "",
-    priority: "Low"
+    time: null,
   });
-  console.log(dateSortCount);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<string>("");
+  const [summary, setSummary] = useState<boolean>(false);
+  const tableRef = useRef<HTMLDivElement>(null);
+
+  const { date } = useDateContext();
+  const { time } = useTimeContext();
+
   useEffect(() => {
-    const existingItems = JSON.parse(localStorage.getItem("todoItems") || "[]");
-    if (existingItems.length === 0) {
-      const defaultItems: TaskData[] = [
-        {
-          title: "Sample Task 1",
-          description: "This is the first default task",
-          date: new Date('2024-01-01').toISOString(),
-          category: "Work",
-          priority: "Medium"
-        },
-        {
-          title: "Sample Task 2",
-          description: "This is the second default task",
-          date: new Date('2024-02-01').toISOString(),
-          category: "Personal",
-          priority: "Low"
-        }
-      ];
-      localStorage.setItem("todoItems", JSON.stringify(defaultItems));
-      setTodoItems(defaultItems);
-      setDateSortedItems(sortItemsByDate(defaultItems));
-    } else {
-      setTodoItems(existingItems);
-      setDateSortedItems(sortItemsByDate(existingItems));
+    if (date) {
+      setFormdata((prev) => ({ ...prev, date }));
     }
-  }, []);
-  const handlePriorityChange = (title: string, newPriority: "High" | "Medium" | "Low" | -1) => {
-    const updatedTasks = todoItems.map(task =>
-      task.title === title ? { ...task, priority: newPriority } : task
-    );
-    setTodoItems(updatedTasks);
-    setDateSortedItems(sortItemsByDate(updatedTasks));
-    localStorage.setItem("todoItems", JSON.stringify(updatedTasks));
-  };
-  const onClearClick = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, clear all!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setTodoItems([]);
-        setDateSortedItems([]);
-        localStorage.removeItem("todoItems");
-        setActiveFilter('default');
+    if (time) {
+      setFormdata((prev) => ({ ...prev, time }));
+    }
+  }, [date, time]);
 
-        toast.success("List cleared successfully!", {
-          position: "top-right",
-          style: {
-            backgroundColor: "#d4edda",
-            color: "#155724",
-            borderLeft: "4px solid #85c79d",
-            borderRadius: "0.5rem",
-            padding: "1.5rem",
-            marginTop: "3rem"
-          },
-        });
+  const validateForm = (): boolean => {
+    if (!formdata.name.trim()) {
+      toast.error("Please enter your name");
+      return false;
+    }
+    if (!formdata.phone.trim() || formdata.phone.length !== 10) {
+      toast.error("Please enter a valid 10-digit phone number");
+      return false;
+    }
+    if (!formdata.guest || formdata.guest <= 0) {
+      toast.error("Please enter a valid number of guests");
+      return false;
+    }
+    if (!formdata.date || !formdata.time) {
+      toast.error("Please select both date and time");
+      return false;
+    }
+    return true;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+
+    if (id === "phone") {
+      if (!/^\d*$/.test(value)) {
+        toast.error("Please enter numbers only");
+        return;
       }
-    });
+      if (value.length > 10) {
+        toast.error("Phone number cannot exceed 10 digits");
+        return;
+      }
+      setFormdata((prev) => ({
+        ...prev,
+        [id]: value,
+      }));
+    } else if (id === "guest") {
+      const guestNumber = parseInt(value) || 0;
+      if (guestNumber > 20) {
+        toast.error("Maximum 20 guests allowed");
+        return;
+      }
+      setFormdata((prev) => ({
+        ...prev,
+        guest: guestNumber,
+      }));
+    } else {
+      setFormdata((prev) => ({
+        ...prev,
+        [id]: value,
+      }));
+    }
   };
 
-  const OpenPopup = () => {
-    setShowPopup(true);
-  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const ClosePopup = () => {
-    setShowPopup(false);
-    setStartDate(null);
-    setFormData({
-      title: "",
-      description: "",
-      date: null,
-      category: "",
-      priority: "Low"
-    });
-  };
+    if (!validateForm()) return;
+    setIsLoading(true);
 
-  const handleDateChange = (date: Date) => {
-    setStartDate(date);
-  };
-
-  const handleOnStorage = (formData: TaskData) => {
-    if (!formData.title.trim()) {
-      toast.error("Task Cannot be Empty!", {
-        position: "top-right",
-        style: {
-          backgroundColor: "#f8d7da",
-          color: "#721c24",
-          borderLeft: "4px solid #e74c3c",
-          borderRadius: "0.5rem",
-          padding: "1.5rem",
-          marginTop: "3rem"
+    try {
+      const response = await fetch("http://localhost:5000/api/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify(formdata),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      await response.json();
+      toast.success("Reservation created successfully!");
+      
+      setFormdata({
+        name: "",
+        phone: "",
+        guest: 0,
+        date: null,
+        time: null,
+      });
+      
+      await handleGetReservations();
+    } catch (error) {
+      console.error("Failed to create reservation:", error);
+      toast.error("Failed to create reservation. Please try again.",{
+        position: "top-right",
+        duration: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+      setSummary(true);
+    }
+  };
+
+  const handleGetReservations = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("http://localhost:5000/api/get");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setReservations(data.reservations);
+    } catch (error) {
+      console.error("Failed to fetch reservations:", error);
+      toast.error("Failed to fetch reservations. Please try again.",{
+        position: "top-right",
+        duration: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteReservation = async (id: string) => {
+    if (!id) {
+      toast.error("Invalid reservation ID",
+        {
+          position: "top-right",
+          duration: 2000,
+        }
+      );
       return;
     }
 
-    const updatedItems = [...todoItems, formData];
-    localStorage.setItem("todoItems", JSON.stringify(updatedItems));
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "This reservation will be permanently deleted.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+        showLoaderOnConfirm: true,
+        preConfirm: async () => {
+          setIsDeleting(id);
+          try {
+            const response = await fetch(
+              `http://localhost:5000/api/delete/${id}`,
+              {
+                method: "DELETE",
+              }
+            );
+            
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return response;
+          } catch (error) {
+            Swal.showValidationMessage(
+              `Delete failed: ${error}`
+            );
+          }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      });
 
-    setTodoItems(updatedItems);
-    setDateSortedItems(sortItemsByDate(updatedItems));
-
-    ClosePopup();
-
-    toast.success("Task added successfully!", {
-      position: "top-right",
-      style: {
-        backgroundColor: "#d4edda",
-        color: "#155724",
-        borderLeft: "4px solid #85c79d",
-        borderRadius: "0.5rem",
-        padding: "1.5rem",
-        marginTop: "3rem"
-      },
-    });
-  };
-
-  const handleOnDelete = (title: string) => {
-    const updatedTasks = todoItems.filter((task) => task.title !== title);
-    setTodoItems(updatedTasks);
-    setDateSortedItems(sortItemsByDate(updatedTasks));
-    localStorage.setItem("todoItems", JSON.stringify(updatedTasks));
-
-    toast.success("Task deleted successfully!", {
-      position: "top-right",
-      style: {
-        backgroundColor: "#d4edda",
-        color: "#155724",
-        borderLeft: "4px solid #85c79d",
-        borderRadius: "0.5rem",
-        padding: "1.5rem",
-        marginTop: "3rem"
-      },
-    });
-  };
-
-  const handleFilterChange = (filter: string) => {
-    // If clicking the same filter, reset to default view
-    setActiveFilter(prevFilter => prevFilter === filter ? 'default' : filter);
-    if (filter === 'date') {
-      setDateSortCount(prev => prev + 1);
+      if (result.isConfirmed) {
+        setReservations((prev) =>
+          prev.filter((reservation) => reservation._id !== id)
+        );
+        
+        toast.success("Reservation deleted successfully!", {
+          position: "top-right",
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to delete reservation:", error);
+      toast.error("Failed to delete reservation. Please try again.", {
+        position: "top-right",
+        duration: 2000,
+      });
+    } finally {
+      setIsDeleting("");
     }
   };
 
-  const currentItems = getCurrentItems(activeFilter, todoItems, dateSortedItems);
+  const formatDate = (dateString: string | Date | null): string => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US");
+  };
 
   return (
-    <main className="h-screen pt-16">
+    <main className="pt-16 mb-8 min-h-screen">
+      {timePopup && <Slot handletimepopup={() => setTimePopup(false)} />}
+      <Toaster richColors position="top-right" />
+      {summary && (<Summary togglesummary={() => setSummary(false)} />)}
       <Decorations />
-      <div className="h-full flex flex-col max-w-2xl mx-auto p-8 gap-4">
-        <p className="text-3xl md:text-5xl font-bold mb-8 font-sans">Daily To Do List</p>
-        <div className="relative max-w-full sm:max-w-2xl">
-          <input
-            type="text"
-            value={formData.title}
-            placeholder="Add new list item"
-            className="w-full px-3 py-3 sm:px-4 sm:py-4 rounded-md border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-400 placeholder:font-thin text-black text-lg sm:text-xl font-bold pr-20 sm:pr-24"
-            readOnly
-            onClick={OpenPopup}
-          />
-          <button
-            className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 px-4 py-2 sm:px-6 sm:py-2.5 bg-blue-500 text-white font-medium text-base sm:text-xl rounded-md hover:bg-blue-600 transition-colors duration-200"
-            onClick={() => handleOnStorage(formData)}
-          >
-            Add
-          </button>
-        </div>
-
-
-        <div className="flex gap-2 md:gap-4 mt-4 flex-wrap">
-          <button
-            className={`px-4 py-2 rounded-full text-xs md:text-base ${activeFilter === 'date'
-              ? "bg-blue-100 text-blue-800 transform -translate-x-1"
-              : "bg-gray-200 text-gray-800"
-              } transition`}
-            onClick={() => handleFilterChange('date')}
-          >
-            {activeFilter === 'date' ? "✓ By Date" : "By Date"}
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full text-xs  md:text-base ${activeFilter === 'home'
-              ? "bg-blue-100 text-blue-800 transform -translate-x-1"
-              : "bg-gray-200 text-gray-800"
-              } transition`}
-            onClick={() => handleFilterChange('home')}
-          >
-            {activeFilter === 'home' ? "✓ Home" : "Home"}
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full text-xs md:text-base ${activeFilter === 'personal'
-              ? "bg-blue-100 text-blue-800 transform -translate-x-1"
-              : "bg-gray-200 text-gray-800"
-              } transition`}
-            onClick={() => handleFilterChange('personal')}
-          >
-            {activeFilter === 'personal' ? "✓ Personal" : "Personal "}
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full text-xs md:text-base ${activeFilter === 'work'
-              ? "bg-blue-100 text-blue-800 transform -translate-x-1"
-              : "bg-gray-200 text-gray-800"
-              } transition`}
-            onClick={() => handleFilterChange('work')}
-          >
-            {activeFilter === 'work' ? "✓ Work" : "Work"}
-          </button>
-        </div>
-
-        <div className={`h-80 ${currentItems.length > 5 ? "overflow-y-scroll" : "overflow-y-auto"} max-w-2xl `}>
-          {currentItems.map((item, index) => (
-            <Checkbox
-              key={index}
-              title={item.title}
-              description={item.description}
-              date={item.date}
-              category={item.category}
-              priority={item.priority}
-              onDelete={() => handleOnDelete(item.title)}
-              onPriorityChange={handlePriorityChange}  // Add this line
+      <div className="flex flex-col max-w-3xl mx-auto p-8 gap-4">
+        <h1 className="text-3xl md:text-5xl font-bold mb-4 font-sans">
+          Reserve Your Table
+        </h1>
+        <div className="grid grid-cols-1 lg:grid-cols-2 border-4 rounded-3xl border-purple-500">
+          <div className="col-span-1">
+            <img
+              src="restaurant.webp"
+              alt="Restaurant interior"
+              className="rounded-3xl hidden lg:flex object-cover w-80 h-96 p-1"
             />
-          ))}
+          </div>
+          <div className="col-span-1 p-2 pt-4">
+            <div className="flex flex-col gap-4">
+              <h2 className="text-center font-semibold text-2xl">
+                Enter the Details
+              </h2>
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-4 justify-center p-4"
+              >
+                <input
+                  type="text"
+                  id="name"
+                  placeholder="Enter your Name"
+                  value={formdata.name}
+                  onChange={handleChange}
+                  required
+                  className="border-2 border-gray-500 rounded-md p-2 font-sans font-semibold hover:border-purple-500"
+                />
+                <input
+                  type="text"
+                  id="phone"
+                  placeholder="Enter your Phone Number"
+                  value={formdata.phone}
+                  onChange={handleChange}
+                  required
+                  maxLength={10}
+                  className="border-2 border-gray-500 hover:border-purple-500 font-semibold font-sans rounded-md p-2"
+                />
+                <input
+                  type="number"
+                  id="guest"
+                  placeholder="Enter the Number of Guests"
+                  value={formdata.guest === 0 ? "" : formdata.guest}
+                  onChange={handleChange}
+                  required
+                  min="1"
+                  max="20"
+                  className="border-2 border-gray-500 rounded-md p-2 font-sans font-semibold hover:border-purple-500"
+                  style={{ appearance: "none" }}
+                />
+
+                {formdata.date && formdata.time ? (
+                  <p className="text-center text-green-400 font-semibold text-xl">
+                    {formdata.date.toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}{" "}
+                    at {formdata.time}
+                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    className="text-blue-500 hover:underline cursor-pointer"
+                    onClick={() => setTimePopup(true)}
+                  >
+                    Select date & time slot
+                  </button>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={`bg-gradient-to-r from-purple-300 to-purple-500 text-white rounded-full p-2 transition-all duration-300 hover:-translate-y-1 hover:from-purple-400 hover:to-purple-600 font-semibold ${
+                    isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isLoading ? 'Processing...' : 'Confirm Reservation'}
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
 
-        <div className="flex justify-between items-center pt-4 border-t max-w-2xl border-gray-200 text-gray-400 text-lg">
-          <span>{currentItems.length} items</span>
-          <Toaster />
-          <button
-            className="hover:text-gray-600 transition-colors duration-200"
-            onClick={onClearClick}
-          >
-            Clear All
-          </button>
-        </div>
-        <div className="">
-          <Popform
-            isVisible={showPopup}
-            onClose={ClosePopup}
-            startDate={startDate}
-            onDatechange={handleDateChange}
-            onData={handleOnStorage}
-            existingTasks={todoItems}  // Pass the todoItems array
-          />
-        </div>
+        <button
+          type="button"
+          disabled={isLoading}
+          className={`bg-green-500 rounded-xl p-2 text-white font-semibold max-w-48 mx-auto transition-all duration-300 hover:bg-green-600 ${
+            isLoading ? 'opacity-50 cursor-not-allowed' : ''
+          } ${reservations.length === 0 ? 'hidden' : ''}`}
+          onClick={handleGetReservations}
+        >
+          {isLoading ? 'Loading...' : 'See All Reservations'}
+        </button>
+
+        {reservations.length > 0 && (
+          <div ref={tableRef} className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-300 mt-4">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-300 p-2">Name</th>
+                  <th className="border border-gray-300 p-2">Phone</th>
+                  <th className="border border-gray-300 p-2">Guests</th>
+                  <th className="border border-gray-300 p-2">Date</th>
+                  <th className="border border-gray-300 p-2">Time</th>
+                  <th className="border border-gray-300 p-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reservations.filter((reservation) => reservation.name !== "John Doe") // Exclude "John Doe"
+                .map((reservation, index) => (
+                  <tr 
+                    key={reservation._id || `reservation-${index}`}
+                    className="text-center"
+                  >
+                    <td className="border border-gray-300 p-2">{reservation.name}</td>
+                    <td className="border border-gray-300 p-2">{reservation.phone}</td>
+                    <td className="border border-gray-300 p-2">{reservation.guest}</td>
+                    <td className="border border-gray-300 p-2">
+                      {formatDate(reservation.date)}
+                    </td>
+                    <td className="border border-gray-300 p-2">{reservation.time}</td>
+                    <td className="border border-gray-300 p-2">
+                      <button
+                        type="button"
+                        disabled={isDeleting === reservation._id}
+                        onClick={() => handleDeleteReservation(reservation._id!)}
+                        className={`bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ${
+                          isDeleting === reservation._id ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        {isDeleting === reservation._id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </main>
   );
