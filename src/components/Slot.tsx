@@ -91,7 +91,7 @@ const Slot = ({ handletimepopup }: Props) => {
       setDate(selectedDate);
       setHide(false);
     } else {
-      toast.error("Please select a date within the next month.",{
+      toast.error("Please select a date within the next month.", {
         position: "top-right",
         duration: 2000,
       });
@@ -124,13 +124,13 @@ const Slot = ({ handletimepopup }: Props) => {
           throw new Error("Failed to create reservation");
         }
       } catch (err) {
-        toast.error(`Failed to reserve the slot. Please try again.${err}`,{
+        toast.error(`Failed to reserve the slot. Please try again.${err}`, {
           position: "top-right",
           duration: 2000,
         });
       }
     } else {
-      toast.error("Please select a time slot.",{
+      toast.error("Please select a time slot.", {
         position: "top-right",
         duration: 2000,
       });
@@ -140,7 +140,7 @@ const Slot = ({ handletimepopup }: Props) => {
   return (
     <div className="inset-0 fixed bg-black bg-opacity-50 z-50 flex justify-center items-center">
       <Toaster richColors={true} />
-      <div className="bg-white p-4 rounded-lg w-96 h-96 my-auto flex flex-col gap-4 justify-center relative">
+      <div className="bg-white p-4 rounded-lg w-full max-w-md h-auto my-auto flex flex-col gap-4 justify-center relative">
         <div className="text-3xl font-bold text-center">Select Time Slot</div>
         <div className="absolute right-3 top-3">
           <IoClose
@@ -150,12 +150,12 @@ const Slot = ({ handletimepopup }: Props) => {
         </div>
         <input
           type="date"
-          className="p-2 border-2 text-center flex justify-center rounded-lg border-black"
+          className="p-2 border-2 text-center flex justify-center rounded-lg border-black w-full"
           onChange={(e) => setSelectedDate(new Date(e.target.value))}
         />
         {hide && (
           <button
-            className="bg-purple-500 rounded-lg hover:bg-purple-600 p-2 mx-4 text-white flex justify-center"
+            className="bg-purple-500 rounded-lg hover:bg-purple-600 p-2 mx-4 text-white flex justify-center w-full"
             onClick={checkDate}
           >
             Check available timeslots
@@ -163,7 +163,7 @@ const Slot = ({ handletimepopup }: Props) => {
         )}
         {!hide && (
           <>
-            <div className="grid grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
               {Object.keys(slotAvailability).map((time) => (
                 <div
                   key={time}
@@ -187,7 +187,7 @@ const Slot = ({ handletimepopup }: Props) => {
               <span>Available Slot</span>
             </div>
             <button
-              className="bg-purple-500 font-semibold rounded-lg hover:bg-purple-600 p-2 mx-4 text-white flex justify-center mt-4"
+              className="bg-purple-500 font-semibold rounded-lg hover:bg-purple-600 p-2 mx-4 text-white flex justify-center mt-4 w-full"
               onClick={handleselectedtime}
             >
               {selectedSlot ? "Confirm Reservation" : "Select another date"}
